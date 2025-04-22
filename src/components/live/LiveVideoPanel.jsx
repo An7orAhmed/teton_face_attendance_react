@@ -65,6 +65,13 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
     setIsTrainDialogOpen(true);
   };
 
+  const handleStartTraining = () => {
+    if(isVideoStreaming) {
+      showSnackbar("Please stop capture/recognition.", "info");
+      return;
+    }
+  }
+
   const handleStartAttendance = async () => {
     try {
       await startAttendanceApi();
@@ -155,7 +162,8 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
 
         {/* Action Buttons */}
         <Stack spacing={2} direction="column">
-          <Button onClick={handleTrainNewFace} variant="outlined" size='large' fullWidth>Add New Face</Button>
+          <Button onClick={handleTrainNewFace} variant="outlined" color="warning" size='large' fullWidth>Add New Face</Button>
+          <Button onClick={handleStartTraining} variant="outlined" color="error" size='large' fullWidth>Start Training</Button>
           {!isAttendanceRunning ? (
             <Button onClick={handleStartAttendance} variant="contained" size='large' color="success" fullWidth>Start Recognition</Button>
           ) : (

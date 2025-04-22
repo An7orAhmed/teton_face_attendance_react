@@ -172,7 +172,7 @@ function TrainNewFaceDialog({ isOpen, setIsOpen, showSnackbar }) {
         <DialogActions sx={{ p: '16px 24px' }}> {/* Add padding to actions */}
           <Button onClick={handleClose} disabled={isSubmitting}>Cancel</Button>
           <Button type="submit" variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? <CircularProgress size={24} /> : 'Start Training'}
+            {isSubmitting ? <CircularProgress size={24} /> : 'Add Face'}
           </Button>
         </DialogActions>
       </form>

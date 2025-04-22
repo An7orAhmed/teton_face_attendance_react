@@ -45,7 +45,7 @@ function App() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Container maxWidth="xl" sx={{ py: 2 }}>
+      <Container maxWidth="xl" sx={{ py: 2 }} >
         {/* Header Component */}
         <Header title="Face Recognition Attendance System" />
 
