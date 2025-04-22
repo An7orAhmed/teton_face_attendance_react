@@ -92,7 +92,7 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
         )}
       </CardContent>
        {/* Snackbar for local notifications */}
-       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>

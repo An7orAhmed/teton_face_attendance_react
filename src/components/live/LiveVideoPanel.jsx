@@ -145,7 +145,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
         <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 1.5 }}>
           <Grid container spacing={1} justifyContent="space-evenly" alignItems="center" textAlign="center">
             <Grid size={4}>
-              <Typography variant="h6" component="p">{format(currentTime, "hh:mm:ss a")}</Typography>
+              <Typography variant="h6" component="p">{format(currentTime, "hh:mm:ss")}</Typography>
               <Typography variant="caption" color="text.secondary">Current Time</Typography>
             </Grid>
             <Grid size={4}>
@@ -174,7 +174,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
 
       <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 1 }}>
         <Typography variant="caption" color="text.secondary">
-          Status: {isAttendanceRunning ? 'Attendance Running' : 'Attendance Stopped'}
+          {isAttendanceRunning ? 'Attendance Running' : 'Attendance Stopped'}
         </Typography>
       </CardActions>
 
@@ -182,7 +182,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
       <TrainNewFaceDialog isOpen={isTrainDialogOpen} setIsOpen={setIsTrainDialogOpen} showSnackbar={showSnackbar} />
 
       {/* Snackbar for notifications */}
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
         <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
