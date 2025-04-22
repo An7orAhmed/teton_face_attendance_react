@@ -76,7 +76,7 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
                     <TableCell component="th" scope="row">{face.unknownId}</TableCell>
                     <TableCell>{face.detectTime}</TableCell>
                     <TableCell>
-                      <Button size="small" variant="outlined" onClick={() => onAddToTrain(face)}>
+                      <Button size="small" variant="outlined" color='secondary' onClick={() => onAddToTrain(face)}>
                         Train
                       </Button>
                     </TableCell>

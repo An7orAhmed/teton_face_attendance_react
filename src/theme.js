@@ -6,11 +6,15 @@ const theme = createTheme({
   cssVariables: true,
   palette: {
     mode: 'dark',
+    background: {
+      default: '#122022',
+      paper: '#122022',
+    },
     primary: {
-      main: '#c62736',
+      main: '#C32635',
     },
     secondary: {
-      main: '#fb7f07',
+      main: '#FDC011',
     },
     error: {
       main: red.A400,

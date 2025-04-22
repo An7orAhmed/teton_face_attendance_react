@@ -101,7 +101,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
     <Box
       sx={{
         aspectRatio: '16 / 9',
-        backgroundColor: 'grey.800',
+        backgroundColor: '#2a3a3d',
         borderRadius: 1,
         display: 'flex',
         alignItems: 'center',
