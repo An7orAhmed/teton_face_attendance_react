@@ -69,7 +69,7 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
               </TableHead>
               <TableBody>
                 {unrecognizedFaces.map((face) => (
-                  <TableRow key={face.unknownId} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableRow key={face.unknownId+face.name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell sx={{ py: 1 }}> 
                       <Avatar src={face.photo} sx={{width: 100, height: 100}} />
                     </TableCell>

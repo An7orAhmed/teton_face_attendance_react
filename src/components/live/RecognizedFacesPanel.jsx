@@ -48,7 +48,6 @@ function RecognizedFacesPanel({ selectedDate, showSnackbar }) { // Receive showS
               <TableHead>
                 <TableRow sx={{ fontWeight: 'bold' }}>
                   <TableCell>Photo</TableCell> 
-                  <TableCell>ID</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>In Time</TableCell>
                   <TableCell>Out Time</TableCell>
@@ -56,12 +55,11 @@ function RecognizedFacesPanel({ selectedDate, showSnackbar }) { // Receive showS
               </TableHead>
               <TableBody>
                 {recognizedFaces.map((face) => (
-                  <TableRow key={face.id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableRow key={face.id+face.name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     <TableCell sx={{ py: 1 }}> 
                         <Avatar src={face.photo} sx={{width: 100, height: 100}} />
                     </TableCell>
-                    <TableCell component="th" scope="row" sx={{ py: 1 }}>{face.id}</TableCell>
-                    <TableCell sx={{ py: 1 }}>{face.name}</TableCell>
+                    <TableCell component="th" scope="row" sx={{ py: 1 }}>{face.id}<br /><strong>{face.name}</strong></TableCell>
                     <TableCell sx={{ py: 1 }}>{face.inTime}</TableCell>
                     <TableCell sx={{ py: 1 }}>{face.outTime || 'N/A'}</TableCell>
                   </TableRow>
