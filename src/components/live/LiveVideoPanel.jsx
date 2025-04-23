@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
@@ -12,14 +11,15 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TextField from '@mui/material/TextField';
-import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 
 import TrainNewFaceDialog from './TrainNewFaceDialog';
 import { useCurrentTime } from '../../hooks/useCurrentTime';
 import { getStats, startAttendanceApi, stopAttendanceApi } from '../../lib/api';
 import { format } from "date-fns";
+import { io } from 'socket.io-client';
 
+const socket = io(`http://${location.hostname}:${location.port}`);
 
 function LiveVideoPanel({ selectedDate, onDateChange }) {
   const [isTrainDialogOpen, setIsTrainDialogOpen] = useState(false);
@@ -58,6 +58,14 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
       }
     };
     fetchStats();
+
+    socket.on('status_update', function (data) {
+      console.log("Socket:", data.message);
+    });
+
+    return () => {
+      socket.off('status_update');
+    };
   }, []); // Fetch only on mount
 
   // --- Event Handlers ---
@@ -66,7 +74,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   };
 
   const handleStartTraining = () => {
-    if(isVideoStreaming) {
+    if (isVideoStreaming) {
       showSnackbar("Please stop capture/recognition.", "info");
       return;
     }
@@ -113,9 +121,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
     >
       {isVideoStreaming ? (
         <Box>
-          <VideocamIcon sx={{ fontSize: 60, color: 'success.main' }} />
-          <Typography>Video Stream Active</Typography>
-          <Typography variant="caption">(Replace with actual video feed)</Typography>
+          <img id="video-stream" src="/video_feed" class="w-full" />
         </Box>
       ) : (
         <Box>
@@ -128,7 +134,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
 
   return (
     <Box sx={{ height: '83vh', overflow: 'auto' }}>
-      <CardHeader title={`Live Video Feed`} style={{textTransform: 'uppercase'}} />
+      <CardHeader title={`Live Cam`} style={{ textTransform: 'uppercase' }} />
       <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {/* Date Selector - Using MUI X DatePicker */}
         <DatePicker
@@ -137,7 +143,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
           onChange={(newValue) => onDateChange(newValue)}
           renderInput={(params) => <TextField {...params} fullWidth size="small" />}
         />
-        
+
         {/* Video Preview Area */}
         <VideoPreview />
 

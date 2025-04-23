@@ -48,7 +48,7 @@ function RecognizedFacesPanel({ selectedDate, showSnackbar }) { // Receive showS
               <TableHead>
                 <TableRow sx={{ fontWeight: 'bold' }}>
                   <TableCell>Photo</TableCell> 
-                  <TableCell>Name</TableCell>
+                  <TableCell>ID/Name</TableCell>
                   <TableCell>In Time</TableCell>
                   <TableCell>Out Time</TableCell>
                 </TableRow>

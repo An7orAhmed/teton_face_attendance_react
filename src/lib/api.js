@@ -1,5 +1,6 @@
-
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// ---------------- DEMO -----------------
 let mockStats = { trainedCount: 5, totalImages: 150 };
 
 let mockRecognized = {
