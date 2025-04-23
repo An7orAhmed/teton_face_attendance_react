@@ -52,12 +52,11 @@ function AddNewFaceDialog({ isOpen, setIsOpen, showSnackbar, setIsVideoStreaming
   // Handle dialog close event
   const handleClose = (event, reason) => {
     if (isSubmitting && (reason === 'backdropClick' || reason === 'escapeKeyDown')) {
-      // Prevent closing while submitting on backdrop click or escape key
       return;
     }
-    resetForm(); // Reset form when closing
+    resetForm(); 
     setIsOpen(false);
-    if (!isSubmitting) setIsVideoStreaming(false);
+    if (!isSubmitting && event?.target?.innerText === "CANCEL") setIsVideoStreaming(false);
   };
 
   // Handle form submission
@@ -83,10 +82,8 @@ function AddNewFaceDialog({ isOpen, setIsOpen, showSnackbar, setIsVideoStreaming
     try {
       handleClose(); // Close dialog
       await addNewFaceApi(apiFormData);
-      setIsVideoStreaming(false);
     } catch (error) {
       showSnackbar(error.message || "An error occurred during adding.", "error");
-      setIsVideoStreaming(false);
       setIsSubmitting(false);
     }
   };
