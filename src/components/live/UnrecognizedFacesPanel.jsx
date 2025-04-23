@@ -40,8 +40,7 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
         const dateString = format(selectedDate, 'yyyy-MM-dd');
         const data = await getUnrecognizedFaces(dateString);
         setUnrecognizedFaces(data);
-      } catch (error) {
-         console.error("Failed to fetch unrecognized faces:", error);
+      } catch {
          showSnackbar("Could not fetch unrecognized faces.");
       }
     };

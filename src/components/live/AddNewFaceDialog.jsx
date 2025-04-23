@@ -85,7 +85,6 @@ function AddNewFaceDialog({ isOpen, setIsOpen, showSnackbar, setIsVideoStreaming
       await addNewFaceApi(apiFormData);
       setIsVideoStreaming(false);
     } catch (error) {
-      console.error("Add failed:", error);
       showSnackbar(error.message || "An error occurred during adding.", "error");
       setIsVideoStreaming(false);
       setIsSubmitting(false);

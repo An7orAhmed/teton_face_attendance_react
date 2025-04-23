@@ -83,7 +83,6 @@ function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, showSnackbar })
       handleClose(); // Close
       await addUnrecognizedToTrainApi(apiFormData);
     } catch (error) {
-      console.error("Add to train failed:", error);
       showSnackbar(error.message || "An error occurred while adding the face.", "error");
       setIsSubmitting(false); // Allow retry
     }

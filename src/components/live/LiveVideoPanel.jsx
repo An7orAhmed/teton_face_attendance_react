@@ -104,8 +104,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
     try {
       await startTrainingApi();
       showSnackbar("Training started.", "success");
-    } catch (error) {
-      console.error("Failed to start training:", error);
+    } catch {
       showSnackbar("Could not start training.", "error");
     }
   }
@@ -120,8 +119,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
       await startAttendanceApi();
       setIsVideoStreaming(true);
       showSnackbar("Attendance started.", "success");
-    } catch (error) {
-      console.error("Failed to start attendance:", error);
+    } catch {
       showSnackbar("Could not start attendance.", "error");
     }
   };
@@ -131,8 +129,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
       await stopAttendanceApi();
       setIsVideoStreaming(false);
       showSnackbar("Attendance stopped.", "info");
-    } catch (error) {
-      console.error("Failed to stop attendance:", error);
+    } catch {
       showSnackbar("Could not stop attendance.", "error");
     }
   };

@@ -26,9 +26,8 @@ function RecognizedFacesPanel({ selectedDate, showSnackbar }) { // Receive showS
         const dateString = format(selectedDate, 'yyyy-MM-dd');
         const data = await getRecognizedFaces(dateString);
         setRecognizedFaces(data);
-      } catch (error) {
-         console.error("Failed to fetch recognized faces:", error);
-         showSnackbar("Could not fetch recognized faces.", "error"); // Use passed-in handler
+      } catch {
+         showSnackbar("Could not fetch recognized faces.", "error"); 
       }
     };
 
