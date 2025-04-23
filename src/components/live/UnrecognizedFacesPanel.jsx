@@ -56,7 +56,7 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
     <Box sx={{ minHeight: '83vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
       <CardHeader title={`Unrecognized Faces`} style={{textTransform: 'uppercase'}} />
       <CardContent sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        {unrecognizedFaces.length > 0 ? (
+        {unrecognizedFaces?.length > 0 ? (
           <TableContainer component={Paper} sx={{ maxHeight: '100%' }}> 
             <Table stickyHeader size="small" aria-label="unrecognized faces table">
               <TableHead>
@@ -70,10 +70,10 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
               <TableBody>
                 {unrecognizedFaces.map((face) => (
                   <TableRow key={face.unknownId+face.name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell sx={{ py: 1 }}> 
+                    <TableCell sx={{ py: 1 }} component="th" scope="row"> 
                       <Avatar src={face.photo} sx={{width: 100, height: 100}} />
                     </TableCell>
-                    <TableCell component="th" scope="row">{face.unknownId}</TableCell>
+                    <TableCell>{face.unknownId}</TableCell>
                     <TableCell>{face.detectTime}</TableCell>
                     <TableCell>
                       <Button size="small" variant="outlined" color='secondary' onClick={() => onAddToTrain(face)}>

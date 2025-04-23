@@ -42,7 +42,7 @@ function RecognizedFacesPanel({ selectedDate, showSnackbar }) { // Receive showS
     <Box sx={{ height: '83vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
       <CardHeader title={`Recognized Faces`} style={{textTransform: 'uppercase'}} />
       <CardContent sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', p: 1 }}> 
-        {recognizedFaces.length > 0 ? (
+        {recognizedFaces?.length > 0 ? (
           <TableContainer component={Paper} sx={{ maxHeight: '100%' }}> 
             <Table stickyHeader size='small' aria-label="recognized faces table"> 
               <TableHead>
@@ -56,10 +56,10 @@ function RecognizedFacesPanel({ selectedDate, showSnackbar }) { // Receive showS
               <TableBody>
                 {recognizedFaces.map((face) => (
                   <TableRow key={face.id+face.name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell sx={{ py: 1 }}> 
+                    <TableCell sx={{ py: 1 }} component="th" scope="row"> 
                         <Avatar src={face.photo} sx={{width: 100, height: 100}} />
                     </TableCell>
-                    <TableCell component="th" scope="row" sx={{ py: 1 }}>{face.id}<br /><strong>{face.name}</strong></TableCell>
+                    <TableCell sx={{ py: 1 }}>{face.id}<br /><strong>{face.name}</strong></TableCell>
                     <TableCell sx={{ py: 1 }}>{face.inTime}</TableCell>
                     <TableCell sx={{ py: 1 }}>{face.outTime || 'N/A'}</TableCell>
                   </TableRow>

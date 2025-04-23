@@ -7,10 +7,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
-import { trainNewFaceApi } from '../../lib/api';
+import { addNewFaceApi } from '../../lib/api';
 
 
-function TrainNewFaceDialog({ isOpen, setIsOpen, showSnackbar }) {
+function AddNewFaceDialog({ isOpen, setIsOpen, showSnackbar, setIsVideoStreaming }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     uniqueId: '',
@@ -57,13 +57,13 @@ function TrainNewFaceDialog({ isOpen, setIsOpen, showSnackbar }) {
     }
     resetForm(); // Reset form when closing
     setIsOpen(false);
+    if (!isSubmitting) setIsVideoStreaming(false);
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    console.log("Submitting training data:", formData);
 
     // Basic Validation (MUI TextFields handle 'required' visually)
     if (!formData.uniqueId || !formData.name || !formData.photoFile || formData.captureDelay <= 0 || formData.captureCount <= 0) {
@@ -81,20 +81,20 @@ function TrainNewFaceDialog({ isOpen, setIsOpen, showSnackbar }) {
     apiFormData.append('captureCount', formData.captureCount.toString());
 
     try {
-      await trainNewFaceApi(apiFormData);
-      showSnackbar(`Training started for ${formData.name} (ID: ${formData.uniqueId}).`, "success");
-      handleClose(); // Close dialog on success
+      handleClose(); // Close dialog
+      await addNewFaceApi(apiFormData);
+      setIsVideoStreaming(false);
     } catch (error) {
-      console.error("Training failed:", error);
-      showSnackbar(error.message || "An error occurred during training.", "error");
-      setIsSubmitting(false); // Allow retry on error
+      console.error("Add failed:", error);
+      showSnackbar(error.message || "An error occurred during adding.", "error");
+      setIsVideoStreaming(false);
+      setIsSubmitting(false);
     }
-    // No finally block needed here as setIsSubmitting is handled in success/error paths
   };
 
   return (
     <Dialog open={isOpen} onClose={handleClose} aria-labelledby="train-face-dialog-title" disableEscapeKeyDown={isSubmitting}>
-      <DialogTitle id="train-face-dialog-title">Train New Face</DialogTitle>
+      <DialogTitle id="train-face-dialog-title">Add New Face</DialogTitle>
       {/* Use form element for proper semantics and submission */}
       <form onSubmit={handleSubmit}>
         <DialogContent>
@@ -180,4 +180,4 @@ function TrainNewFaceDialog({ isOpen, setIsOpen, showSnackbar }) {
   );
 }
 
-export default TrainNewFaceDialog;
+export default AddNewFaceDialog;

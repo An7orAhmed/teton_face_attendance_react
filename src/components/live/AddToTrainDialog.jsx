@@ -79,17 +79,9 @@ function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, showSnackbar })
     apiFormData.append('name', formData.name);
     apiFormData.append('photo', formData.photoFile);
 
-    console.log("Submitting 'Add to Train' data:", {
-      unknownId: unrecognizedFace.unknownId,
-      uniqueId: formData.uniqueId,
-      name: formData.name,
-      photoFileName: formData.photoFile?.name
-    });
-
     try {
+      handleClose(); // Close
       await addUnrecognizedToTrainApi(apiFormData);
-      showSnackbar(`Added ${formData.name} (ID: ${formData.uniqueId}) to training queue.`, "success");
-      handleClose(); // Close on success
     } catch (error) {
       console.error("Add to train failed:", error);
       showSnackbar(error.message || "An error occurred while adding the face.", "error");

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import CardActions from '@mui/material/CardActions';
@@ -116,7 +115,7 @@ function AttendanceTab() {
               label="Select Date"
               value={selectedDate}
               onChange={(newValue) => setSelectedDate(newValue)}
-              renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: { sm: 240 } }} />}
+              slotProps={{ textField: { variant: 'outlined' }, size: 'small', sx: { minWidth: { sm: 240 } } }}
             />
             {/* Download Button */}
             <Button
@@ -132,7 +131,7 @@ function AttendanceTab() {
         sx={{ '.MuiCardHeader-action': { alignSelf: { xs: 'stretch', sm: 'center' }, mt: { xs: 2, sm: 0 }, ml: { sm: 0 } } }}
       />
       <CardContent sx={{ pt: 1, maxHeight: '70vh', overflow: 'auto' }}>
-        {attendanceData.length > 0 ? (
+        {attendanceData?.length > 0 ? (
           <TableContainer component={Paper}>
             <Table stickyHeader size="small" aria-label="attendance table">
               <TableHead>
@@ -175,7 +174,7 @@ function AttendanceTab() {
       </CardContent>
       <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 1 }}>
         <Typography variant="caption" color="text.secondary">
-          Showing {attendanceData.length} record(s).
+          Showing {attendanceData?.length} record(s).
         </Typography>
       </CardActions>
       {/* Snackbar for local notifications */}

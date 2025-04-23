@@ -8,6 +8,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import Header from './components/Header';
 import LiveTab from './components/live/LiveTab';
 import AttendanceTab from './components/attendance/AttendanceTab';
+import FaceTab from './components/faces/Faces';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -54,6 +55,7 @@ function App() {
           <Tabs value={activeTab} onChange={handleTabChange} aria-label="main tabs">
             <Tab label="Live" {...a11yProps(0)} />
             <Tab label="Attendance" {...a11yProps(1)} />
+            <Tab label="Faces" {...a11yProps(2)} />
           </Tabs>
         </Box>
 
@@ -63,6 +65,9 @@ function App() {
         </TabPanel>
         <TabPanel value={activeTab} index={1}>
           <AttendanceTab />
+        </TabPanel>
+        <TabPanel value={activeTab} index={2}>
+          <FaceTab />
         </TabPanel>
 
         {/* Note: Snackbar/Toasts are handled within components for this example */}

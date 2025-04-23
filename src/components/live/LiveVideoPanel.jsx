@@ -13,17 +13,16 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TextField from '@mui/material/TextField';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 
-import TrainNewFaceDialog from './TrainNewFaceDialog';
+import AddNewFaceDialog from './AddNewFaceDialog';
 import { useCurrentTime } from '../../hooks/useCurrentTime';
-import { getStats, startAttendanceApi, stopAttendanceApi } from '../../lib/api';
+import { getStats, HOST, startAttendanceApi, startTrainingApi, stopAttendanceApi } from '../../lib/api';
 import { format } from "date-fns";
 import { io } from 'socket.io-client';
 
-const socket = io(`http://${location.hostname}:${location.port}`);
+const socket = io(`http://${location.hostname}:5000`); // location.port
 
 function LiveVideoPanel({ selectedDate, onDateChange }) {
   const [isTrainDialogOpen, setIsTrainDialogOpen] = useState(false);
-  const [isAttendanceRunning, setIsAttendanceRunning] = useState(false);
   const [isVideoStreaming, setIsVideoStreaming] = useState(false);
   const [stats, setStats] = useState({ trainedCount: 0, totalImages: 0 });
   const currentTime = useCurrentTime();
@@ -52,6 +51,9 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
       try {
         const data = await getStats();
         setStats(data);
+        if (data?.isCapturing || data?.isRecognizing) {
+          setIsVideoStreaming(true);
+        }
       } catch (error) {
         console.error("Failed to fetch stats:", error);
         showSnackbar("Could not fetch statistics.", "error");
@@ -60,7 +62,21 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
     fetchStats();
 
     socket.on('status_update', function (data) {
-      console.log("Socket:", data.message);
+      try {
+        const json = JSON.parse(data.message);
+        if (json?.cam_frame && typeof json.cam_frame !== 'undefined') {
+          const imgElement = document.getElementById('video-stream');
+          if (imgElement) {
+            imgElement.src = `data:image/jpeg;base64,${json?.cam_frame}`;
+          }
+        }
+      } catch {
+        console.log("Socket:", data.message);
+        showSnackbar(data.message, "info");
+        if (data.message?.includes('stopped')) {
+          setIsVideoStreaming(false);
+        }
+      }
     });
 
     return () => {
@@ -69,21 +85,39 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   }, []); // Fetch only on mount
 
   // --- Event Handlers ---
-  const handleTrainNewFace = () => {
+  const handleAddNewFace = () => {
+    if (isVideoStreaming) {
+      showSnackbar("Camera is busy!", "error");
+      return;
+    }
+
     setIsTrainDialogOpen(true);
+    setIsVideoStreaming(true);
   };
 
-  const handleStartTraining = () => {
+  const handleStartTraining = async () => {
     if (isVideoStreaming) {
-      showSnackbar("Please stop capture/recognition.", "info");
+      showSnackbar("Camera is busy!", "error");
       return;
+    }
+
+    try {
+      await startTrainingApi();
+      showSnackbar("Training started.", "success");
+    } catch (error) {
+      console.error("Failed to start training:", error);
+      showSnackbar("Could not start training.", "error");
     }
   }
 
   const handleStartAttendance = async () => {
     try {
+      if (isVideoStreaming) {
+        showSnackbar("Camera is busy!", "error");
+        return;
+      }
+
       await startAttendanceApi();
-      setIsAttendanceRunning(true);
       setIsVideoStreaming(true);
       showSnackbar("Attendance started.", "success");
     } catch (error) {
@@ -95,7 +129,6 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   const handleStopAttendance = async () => {
     try {
       await stopAttendanceApi();
-      setIsAttendanceRunning(false);
       setIsVideoStreaming(false);
       showSnackbar("Attendance stopped.", "info");
     } catch (error) {
@@ -117,11 +150,12 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
         color: 'grey.400',
         textAlign: 'center',
         width: '100%',
+        height: '300px',
       }}
     >
       {isVideoStreaming ? (
         <Box>
-          <img id="video-stream" src="/video_feed" class="w-full" />
+          <img id="video-stream" className="w-full" />
         </Box>
       ) : (
         <Box>
@@ -141,7 +175,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
           label="Select Date"
           value={selectedDate}
           onChange={(newValue) => onDateChange(newValue)}
-          renderInput={(params) => <TextField {...params} fullWidth size="small" />}
+          slotProps={{ textField: { variant: 'outlined' }, size: 'small', fullWidth: true }}
         />
 
         {/* Video Preview Area */}
@@ -168,9 +202,9 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
 
         {/* Action Buttons */}
         <Stack spacing={2} direction="column">
-          <Button onClick={handleTrainNewFace} variant="outlined" color="warning" size='large' fullWidth>Add New Face</Button>
+          <Button onClick={handleAddNewFace} variant="outlined" color="warning" size='large' fullWidth>Add New Face</Button>
           <Button onClick={handleStartTraining} variant="outlined" color="error" size='large' fullWidth>Start Training</Button>
-          {!isAttendanceRunning ? (
+          {!isVideoStreaming ? (
             <Button onClick={handleStartAttendance} variant="contained" size='large' color="success" fullWidth>Start Recognition</Button>
           ) : (
             <Button onClick={handleStopAttendance} variant="contained" size='large' color="error" fullWidth>Stop Recognition</Button>
@@ -180,12 +214,12 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
 
       <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 1 }}>
         <Typography variant="caption" color="text.secondary">
-          {isAttendanceRunning ? 'Attendance Running' : 'Attendance Stopped'}
+          {isVideoStreaming ? 'Attendance Running' : 'Attendance Stopped'}
         </Typography>
       </CardActions>
 
       {/* Train New Face Dialog */}
-      <TrainNewFaceDialog isOpen={isTrainDialogOpen} setIsOpen={setIsTrainDialogOpen} showSnackbar={showSnackbar} />
+      <AddNewFaceDialog isOpen={isTrainDialogOpen} setIsOpen={setIsTrainDialogOpen} showSnackbar={showSnackbar} setIsVideoStreaming={setIsVideoStreaming} />
 
       {/* Snackbar for notifications */}
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>

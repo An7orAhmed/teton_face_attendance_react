@@ -1,138 +1,96 @@
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// ---------------- DEMO -----------------
-let mockStats = { trainedCount: 5, totalImages: 150 };
+export const HOST = 'http://192.168.0.169:5000';
 
-let mockRecognized = {
-  "2025-04-22": [
-    { id: 'EMP001', name: 'Alice Smith', inTime: '08:25 AM', outTime: null, photo: null },
-    { id: 'EMP003', name: 'Bob Johnson', inTime: '08:28 AM', outTime: null, photo: null },
-  ],
-  "2025-04-21": [
-    { id: 'EMP001', name: 'Alice Smith', inTime: '08:30 AM', outTime: '05:05 PM', photo: null },
-    { id: 'EMP002', name: 'Charlie Brown', inTime: '09:00 AM', outTime: '05:00 PM', photo: null },
-    { id: 'EMP003', name: 'Bob Johnson', inTime: '08:35 AM', outTime: '04:55 PM', photo: null },
-    { id: 'EMP001', name: 'Alice Smith', inTime: '08:30 AM', outTime: '05:05 PM', photo: null },
-    { id: 'EMP002', name: 'Charlie Brown', inTime: '09:00 AM', outTime: '05:00 PM', photo: null },
-    { id: 'EMP003', name: 'Bob Johnson', inTime: '08:35 AM', outTime: '04:55 PM', photo: null },
-    { id: 'EMP001', name: 'Alice Smith', inTime: '08:30 AM', outTime: '05:05 PM', photo: null },
-    { id: 'EMP002', name: 'Charlie Brown', inTime: '09:00 AM', outTime: '05:00 PM', photo: null },
-    { id: 'EMP003', name: 'Bob Johnson', inTime: '08:35 AM', outTime: '04:55 PM', photo: null },
-    { id: 'EMP001', name: 'Alice Smith', inTime: '08:30 AM', outTime: '05:05 PM', photo: null },
-    { id: 'EMP002', name: 'Charlie Brown', inTime: '09:00 AM', outTime: '05:00 PM', photo: null },
-    { id: 'EMP003', name: 'Bob Johnson', inTime: '08:35 AM', outTime: '04:55 PM', photo: null },
-    { id: 'EMP001', name: 'Alice Smith', inTime: '08:30 AM', outTime: '05:05 PM', photo: null },
-    { id: 'EMP002', name: 'Charlie Brown', inTime: '09:00 AM', outTime: '05:00 PM', photo: null },
-    { id: 'EMP003', name: 'Bob Johnson', inTime: '08:35 AM', outTime: '04:55 PM', photo: null },
-    { id: 'EMP001', name: 'Alice Smith', inTime: '08:30 AM', outTime: '05:05 PM', photo: null },
-    { id: 'EMP002', name: 'Charlie Brown', inTime: '09:00 AM', outTime: '05:00 PM', photo: null },
-    { id: 'EMP003', name: 'Bob Johnson', inTime: '08:35 AM', outTime: '04:55 PM', photo: null },
-    { id: 'EMP001', name: 'Alice Smith', inTime: '08:30 AM', outTime: '05:05 PM', photo: null },
-    { id: 'EMP002', name: 'Charlie Brown', inTime: '09:00 AM', outTime: '05:00 PM', photo: null },
-    { id: 'EMP003', name: 'Bob Johnson', inTime: '08:35 AM', outTime: '04:55 PM', photo: null },
-    { id: 'EMP001', name: 'Alice Smith', inTime: '08:30 AM', outTime: '05:05 PM', photo: null },
-    { id: 'EMP002', name: 'Charlie Brown', inTime: '09:00 AM', outTime: '05:00 PM', photo: null },
-    { id: 'EMP003', name: 'Bob Johnson', inTime: '08:35 AM', outTime: '04:55 PM', photo: null },
-  ]
-};
+function makePhotoURL(data, key) {
+  return data.map((item) => ({
+    ...item,
+    [key]: HOST + "/file" + item[key]
+  }));
+}
 
-let mockUnrecognized = {
-  "2025-04-22": [
-    { unknownId: 'PERSON_1', detectTime: '08:29 AM', photo: null },
-    { unknownId: 'PERSON_2', detectTime: '08:30 AM', photo: null },
-  ],
-  "2025-04-21": []
-};
+export async function getAllFaces() {
+  try {
+    const resp = await fetch(`${HOST}/faces`);
+    const data = await resp.json();
+    const modifiedData = makePhotoURL(data, 'Photo');
+    return modifiedData;
+  } catch (error) {
+    console.error("Error fetching all faces:", error);
+    throw error;
+  }
+}
 
-let mockAttendance = {
-  "2025-04-22": [
-    { id: 'EMP001', name: 'Alice Smith', date: '2025-04-22', inTime: '08:25 AM', outTime: null, status: 'Present' },
-    { id: 'EMP003', name: 'Bob Johnson', date: '2025-04-22', inTime: '08:28 AM', outTime: null, status: 'Present' },
-    { id: 'EMP002', name: 'Charlie Brown', date: '2025-04-22', inTime: null, outTime: null, status: 'Absent' },
-    { id: 'EMP001', name: 'Alice Smith', date: '2025-04-22', inTime: '08:25 AM', outTime: null, status: 'Present' },
-    { id: 'EMP003', name: 'Bob Johnson', date: '2025-04-22', inTime: '08:28 AM', outTime: null, status: 'Present' },
-    { id: 'EMP002', name: 'Charlie Brown', date: '2025-04-22', inTime: null, outTime: null, status: 'Absent' },
-    { id: 'EMP001', name: 'Alice Smith', date: '2025-04-22', inTime: '08:25 AM', outTime: null, status: 'Present' },
-    { id: 'EMP003', name: 'Bob Johnson', date: '2025-04-22', inTime: '08:28 AM', outTime: null, status: 'Present' },
-    { id: 'EMP002', name: 'Charlie Brown', date: '2025-04-22', inTime: null, outTime: null, status: 'Absent' },
-    { id: 'EMP001', name: 'Alice Smith', date: '2025-04-22', inTime: '08:25 AM', outTime: null, status: 'Present' },
-    { id: 'EMP003', name: 'Bob Johnson', date: '2025-04-22', inTime: '08:28 AM', outTime: null, status: 'Present' },
-    { id: 'EMP002', name: 'Charlie Brown', date: '2025-04-22', inTime: null, outTime: null, status: 'Absent' },
-    { id: 'EMP001', name: 'Alice Smith', date: '2025-04-22', inTime: '08:25 AM', outTime: null, status: 'Present' },
-    { id: 'EMP003', name: 'Bob Johnson', date: '2025-04-22', inTime: '08:28 AM', outTime: null, status: 'Present' },
-    { id: 'EMP002', name: 'Charlie Brown', date: '2025-04-22', inTime: null, outTime: null, status: 'Absent' },
-    { id: 'EMP001', name: 'Alice Smith', date: '2025-04-22', inTime: '08:25 AM', outTime: null, status: 'Present' },
-    { id: 'EMP003', name: 'Bob Johnson', date: '2025-04-22', inTime: '08:28 AM', outTime: null, status: 'Present' },
-    { id: 'EMP002', name: 'Charlie Brown', date: '2025-04-22', inTime: null, outTime: null, status: 'Absent' },
-    { id: 'EMP001', name: 'Alice Smith', date: '2025-04-22', inTime: '08:25 AM', outTime: null, status: 'Present' },
-    { id: 'EMP003', name: 'Bob Johnson', date: '2025-04-22', inTime: '08:28 AM', outTime: null, status: 'Present' },
-    { id: 'EMP002', name: 'Charlie Brown', date: '2025-04-22', inTime: null, outTime: null, status: 'Absent' },
-    { id: 'EMP001', name: 'Alice Smith', date: '2025-04-22', inTime: '08:25 AM', outTime: null, status: 'Present' },
-    { id: 'EMP003', name: 'Bob Johnson', date: '2025-04-22', inTime: '08:28 AM', outTime: null, status: 'Present' },
-    { id: 'EMP002', name: 'Charlie Brown', date: '2025-04-22', inTime: null, outTime: null, status: 'Absent' },
-    { id: 'EMP001', name: 'Alice Smith', date: '2025-04-22', inTime: '08:25 AM', outTime: null, status: 'Present' },
-    { id: 'EMP003', name: 'Bob Johnson', date: '2025-04-22', inTime: '08:28 AM', outTime: null, status: 'Present' },
-    { id: 'EMP002', name: 'Charlie Brown', date: '2025-04-22', inTime: null, outTime: null, status: 'Absent' },
-  ],
-  "2025-04-21": [
-    { id: 'EMP001', name: 'Alice Smith', date: '2025-04-21', inTime: '08:30 AM', outTime: '05:05 PM', status: 'Present' },
-    { id: 'EMP002', name: 'Charlie Brown', date: '2025-04-21', inTime: '09:00 AM', outTime: '05:00 PM', status: 'Present' },
-    { id: 'EMP003', name: 'Bob Johnson', date: '2025-04-21', inTime: '08:35 AM', outTime: '04:55 PM', status: 'Present' },
-  ]
-};
+export async function getStats() {
+  try {
+    const resp = await fetch(`${HOST}/stats`);
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    throw error;
+  }
+}
 
-export const getStats = async () => {
-  await delay(300);
-  console.log("API: Fetching stats");
-  return mockStats;
-};
+export async function addNewFaceApi(apiFormData) {
+  try {
+    const resp = await fetch(`${HOST}/add_face`, {
+      method: 'POST',
+      body: apiFormData,
+    });
 
-export const getRecognizedFaces = async (dateString) => {
-  await delay(500);
-  console.log(`API: Fetching recognized faces for ${dateString}`);
-  return mockRecognized[dateString] || [];
-};
+    const result = await resp.json();
+    return result;
+  } catch (error) {
+    console.error("Error adding new face:", error);
+    throw error;
+  }
+}
 
-export const getUnrecognizedFaces = async (dateString) => {
-  await delay(600);
-  console.log(`API: Fetching unrecognized faces for ${dateString}`);
-  return mockUnrecognized[dateString] || [];
-};
+export async function addUnrecognizedToTrainApi(apiFormData) {
 
-export const getAttendance = async (dateString) => {
-  await delay(700);
-  console.log(`API: Fetching attendance for ${dateString}`);
-  return mockAttendance[dateString] || [];
-};
+}
 
-export const startAttendanceApi = async () => {
-  await delay(400);
-  console.log("API: Starting attendance");
-  return { success: true, message: "Attendance started" };
-};
+export async function startTrainingApi() {
+  try {
+    const resp = await fetch(`${HOST}/start_training`);
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.error("Error starting training:", error);
+    throw error;
+  }
+}
 
-export const stopAttendanceApi = async () => {
-  await delay(400);
-  console.log("API: Stopping attendance");
-  return { success: true, message: "Attendance stopped" };
-};
+export async function startAttendanceApi() {
+  try {
+    const resp = await fetch(`${HOST}/start_attendance`);
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.error("Error starting attendance:", error);
+    throw error;
+  }
+}
 
-export const trainNewFaceApi = async (formData) => {
-  await delay(1500);
-  const name = formData.get('name');
-  const uniqueId = formData.get('uniqueId');
-  console.log(`API: Training new face: ${name} (ID: ${uniqueId})`);
-  mockStats.trainedCount += 1;
-  mockStats.totalImages += parseInt(formData.get('captureCount') || '10', 10);
-  return { success: true, message: `Training started for ${name}` };
-};
+export async function stopAttendanceApi() {
+  try {
+    const resp = await fetch(`${HOST}/stop_attendance`);
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.error("Error stopping attendance:", error);
+    throw error;
+  }
+}
 
-export const addUnrecognizedToTrainApi = async (formData) => {
-  await delay(1200);
-  const name = formData.get('name');
-  const uniqueId = formData.get('uniqueId');
-  const unknownId = formData.get('unknownId');
-  console.log(`API: Adding unrecognized face ${unknownId} as ${name} (ID: ${uniqueId})`);
-  mockStats.trainedCount += 1;
-  return { success: true, message: `Added ${name} to training queue.` };
-};
+export async function getRecognizedFaces(dateString) {
+
+}
+
+export async function getUnrecognizedFaces(dateString) {
+
+}
+
+export async function getAttendance(dateString) {
+
+}
