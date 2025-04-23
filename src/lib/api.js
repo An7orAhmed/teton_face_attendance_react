@@ -63,7 +63,7 @@ export async function startTrainingApi() {
 
 export async function startAttendanceApi() {
   try {
-    const resp = await fetch(`${HOST}/start_attendance`);
+    const resp = await fetch(`${HOST}/start_recognition`);
     const data = await resp.json();
     return data;
   } catch (error) {
@@ -74,7 +74,7 @@ export async function startAttendanceApi() {
 
 export async function stopAttendanceApi() {
   try {
-    const resp = await fetch(`${HOST}/stop_attendance`);
+    const resp = await fetch(`${HOST}/stop_recognition`);
     const data = await resp.json();
     return data;
   } catch (error) {

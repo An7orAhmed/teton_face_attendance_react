@@ -22,6 +22,7 @@ import { io } from 'socket.io-client';
 const socket = io(`http://${location.hostname}:5000`); // location.port
 
 function LiveVideoPanel({ selectedDate, onDateChange }) {
+  const [isTraining, setIsTraining] = useState(false);
   const [isTrainDialogOpen, setIsTrainDialogOpen] = useState(false);
   const [isVideoStreaming, setIsVideoStreaming] = useState(false);
   const [stats, setStats] = useState({ trainedCount: 0, totalImages: 0 });
@@ -75,6 +76,8 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
         showSnackbar(data.message, "info");
         if (data.message?.includes('stopped')) {
           setIsVideoStreaming(false);
+        } else if (data.message?.includes('Training completed')) {
+          setIsTraining(false);
         }
       }
     });
@@ -86,24 +89,14 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
 
   // --- Event Handlers ---
   const handleAddNewFace = () => {
-    if (isVideoStreaming) {
-      showSnackbar("Camera is busy!", "error");
-      return;
-    }
-
     setIsTrainDialogOpen(true);
     setIsVideoStreaming(true);
   };
 
   const handleStartTraining = async () => {
-    if (isVideoStreaming) {
-      showSnackbar("Camera is busy!", "error");
-      return;
-    }
-
     try {
+      setIsTraining(true);
       await startTrainingApi();
-      showSnackbar("Training started.", "success");
     } catch {
       showSnackbar("Could not start training.", "error");
     }
@@ -111,11 +104,6 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
 
   const handleStartAttendance = async () => {
     try {
-      if (isVideoStreaming) {
-        showSnackbar("Camera is busy!", "error");
-        return;
-      }
-
       await startAttendanceApi();
       setIsVideoStreaming(true);
       showSnackbar("Attendance started.", "success");
@@ -199,12 +187,12 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
 
         {/* Action Buttons */}
         <Stack spacing={2} direction="column">
-          <Button onClick={handleAddNewFace} variant="outlined" color="warning" size='large' fullWidth>Add New Face</Button>
-          <Button onClick={handleStartTraining} variant="outlined" color="error" size='large' fullWidth>Start Training</Button>
+          <Button onClick={handleAddNewFace} disabled={isTraining || isVideoStreaming} variant="outlined" color="warning" size='large' fullWidth>Add New Face</Button>
+          <Button onClick={handleStartTraining} disabled={isTraining || isVideoStreaming} variant="outlined" color="error" size='large' fullWidth>Start Training</Button>
           {!isVideoStreaming ? (
-            <Button onClick={handleStartAttendance} variant="contained" size='large' color="success" fullWidth>Start Recognition</Button>
+            <Button onClick={handleStartAttendance} disabled={isTraining || isVideoStreaming} variant="contained" size='large' color="success" fullWidth>Start Recognition</Button>
           ) : (
-            <Button onClick={handleStopAttendance} variant="contained" size='large' color="error" fullWidth>Stop Recognition</Button>
+            <Button onClick={handleStopAttendance} disabled={isTraining} variant="contained" size='large' color="error" fullWidth>Stop Recognition</Button>
           )}
         </Stack>
       </CardContent>
