@@ -95,7 +95,8 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
     try {
       setIsTraining(true);
       await startTrainingApi();
-    } catch {
+    } catch (error) {
+      console.error("Failed to start training:", error);
       showSnackbar("Could not start training.", "error");
     }
   }
@@ -105,7 +106,8 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
       await startAttendanceApi();
       setIsVideoStreaming(true);
       showSnackbar("Attendance started.", "success");
-    } catch {
+    } catch (error) {
+      console.error("Failed to start attendance:", error);
       showSnackbar("Could not start attendance.", "error");
     }
   };
@@ -115,7 +117,8 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
       await stopAttendanceApi();
       setIsVideoStreaming(false);
       showSnackbar("Attendance stopped.", "info");
-    } catch {
+    } catch (error) {
+      console.error("Failed to stop attendance:", error);
       showSnackbar("Could not stop attendance.", "error");
     }
   };
@@ -150,7 +153,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   );
 
   return (
-    <Box sx={{ height: '83vh', overflow: 'auto' }}>
+    <Box sx={{ maxHeight: '83vh', overflow: 'auto' }}>
       <CardHeader title={`Live Cam`} style={{ textTransform: 'uppercase' }} />
       <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {/* Date Selector - Using MUI X DatePicker */}

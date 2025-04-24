@@ -11,38 +11,20 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
-import Avatar from '@mui/material/Avatar'; 
+import Avatar from '@mui/material/Avatar';
 
 import { getUnrecognizedFaces } from '../../lib/api';
 import { format } from 'date-fns';
 
 function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
   const [unrecognizedFaces, setUnrecognizedFaces] = useState([]);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-
-  const showSnackbar = (message) => {
-    setSnackbarMessage(message);
-    setSnackbarOpen(true);
-  };
-
-   const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') return;
-    setSnackbarOpen(false);
-  };
 
   useEffect(() => {
     const fetchFaces = async () => {
-       if (!selectedDate) return;
-      try {
-        const dateString = format(selectedDate, 'yyyy-MM-dd');
-        const data = await getUnrecognizedFaces(dateString);
-        setUnrecognizedFaces(data);
-      } catch {
-         showSnackbar("Could not fetch unrecognized faces.");
-      }
+      if (!selectedDate) return;
+      const dateString = format(selectedDate, 'yyyy-MM-dd');
+      const data = await getUnrecognizedFaces(dateString);
+      setUnrecognizedFaces(data);
     };
 
     fetchFaces();
@@ -52,28 +34,29 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
   }, [selectedDate]);
 
   return (
-    <Box sx={{ minHeight: '83vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
-      <CardHeader title={`Unrecognized Faces`} style={{textTransform: 'uppercase'}} />
+    <Box sx={{ maxHeight: '83vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+      <CardHeader title={`Unrecognized Faces`} style={{ textTransform: 'uppercase' }} />
       <CardContent sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {unrecognizedFaces?.length > 0 ? (
-          <TableContainer component={Paper} sx={{ maxHeight: '100%' }}> 
+          <TableContainer component={Paper} sx={{ maxHeight: '100%' }}>
             <Table stickyHeader size="small" aria-label="unrecognized faces table">
               <TableHead>
                 <TableRow sx={{ fontWeight: 'bold' }}>
-                  <TableCell>Photo</TableCell> 
-                  <TableCell>Unknown ID</TableCell>
-                  <TableCell>Detect Time</TableCell>
+                  <TableCell>Photo</TableCell>
+                  <TableCell>ID/Detect Time</TableCell>
                   <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {unrecognizedFaces.map((face) => (
-                  <TableRow key={face.unknownId+face.name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell sx={{ py: 1 }} component="th" scope="row"> 
-                      <Avatar src={face.photo} sx={{width: 100, height: 100}} />
+                  <TableRow key={face.unknownId + face.name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell sx={{ py: 1 }} component="th" scope="row">
+                      <Avatar variant='rounded' src={face.photo} sx={{ width: 100, height: 100 }} />
                     </TableCell>
-                    <TableCell>{face.unknownId}</TableCell>
-                    <TableCell>{face.detectTime}</TableCell>
+                    <TableCell>
+                      <span className='italic text-gray-400'>{face.unknownId}</span><br />
+                      <span className='text-md font-bold'>{face.detectTime}</span>
+                    </TableCell>
                     <TableCell>
                       <Button size="small" variant="outlined" color='secondary' onClick={() => onAddToTrain(face)}>
                         Train
@@ -85,17 +68,11 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
             </Table>
           </TableContainer>
         ) : (
-           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>
-             <Typography color="text.secondary">No unrecognized faces detected for {format(selectedDate, "PPP")}.</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>
+            <Typography color="text.secondary">No unrecognized faces detected for {format(selectedDate, "PPP")}.</Typography>
           </Box>
         )}
       </CardContent>
-       {/* Snackbar for local notifications */}
-       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-        <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

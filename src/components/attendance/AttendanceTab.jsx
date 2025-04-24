@@ -66,8 +66,6 @@ function AttendanceTab() {
     console.log("Download triggered for date:", format(selectedDate, 'yyyy-MM-dd'));
     showSnackbar(`Downloading attendance for ${format(selectedDate, "PPP")}. (Mock)`, "info");
 
-    // --- CSV Generation Logic (Example - needs browser environment) ---
-    /*
     const headers = ["ID", "Name", "Date", "In Time", "Out Time", "Status"];
     const csvContent = [
       headers.join(","),
@@ -76,8 +74,10 @@ function AttendanceTab() {
         `"${row.inTime || 'N/A'}"`, `"${row.outTime || 'N/A'}"`, `"${row.status}"`
       ].join(","))
     ].join("\n");
+    
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
+
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
@@ -88,10 +88,8 @@ function AttendanceTab() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } else {
-        showSnackbar("Download not supported in this browser.", "error");
+      showSnackbar("Download not supported in this browser.", "error");
     }
-    */
-    // --- End CSV Example ---
   };
 
   // Determine chip color based on status
@@ -99,7 +97,7 @@ function AttendanceTab() {
     switch (status) {
       case 'Present': return 'success';
       case 'Absent': return 'error';
-      case 'Late': return 'warning'; 
+      case 'Late': return 'warning';
       default: return 'default';
     }
   }
@@ -146,7 +144,7 @@ function AttendanceTab() {
               <TableBody>
                 {attendanceData.map((record) => (
                   <TableRow key={`${record.id}-${record.date}`} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell component="th" scope="row" sx={{py: 3}}>{record.id}</TableCell>
+                    <TableCell component="th" scope="row" sx={{ py: 3 }}>{record.id}</TableCell>
                     <TableCell>{record.name}</TableCell>
                     <TableCell>{record.date}</TableCell>
                     <TableCell>{record.inTime || 'N/A'}</TableCell>

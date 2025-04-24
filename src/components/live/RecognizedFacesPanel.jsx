@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
@@ -9,44 +9,39 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper'; 
-import Avatar from '@mui/material/Avatar'; 
+import Paper from '@mui/material/Paper';
+import Avatar from '@mui/material/Avatar';
 
-import { getRecognizedFaces } from '../../lib/api'; 
+import { getRecognizedFaces } from '../../lib/api';
 import { format } from 'date-fns';
 
-
-function RecognizedFacesPanel({ selectedDate, showSnackbar }) { // Receive showSnackbar as prop
+function RecognizedFacesPanel({ selectedDate }) {
   const [recognizedFaces, setRecognizedFaces] = useState([]);
 
   useEffect(() => {
     const fetchFaces = async () => {
       if (!selectedDate) return;
-      try {
-        const dateString = format(selectedDate, 'yyyy-MM-dd');
-        const data = await getRecognizedFaces(dateString);
-        setRecognizedFaces(data);
-      } catch {
-         showSnackbar("Could not fetch recognized faces.", "error"); 
-      }
+      const dateString = format(selectedDate, 'yyyy-MM-dd');
+      const data = await getRecognizedFaces(dateString);
+      setRecognizedFaces(data);
     };
 
     fetchFaces();
     // polling
     const intervalId = setInterval(fetchFaces, 3000);
     return () => clearInterval(intervalId);
-  }, [selectedDate, showSnackbar]);
+  }, [selectedDate]);
 
   return (
-    <Box sx={{ height: '83vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
-      <CardHeader title={`Recognized Faces`} style={{textTransform: 'uppercase'}} />
-      <CardContent sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', p: 1 }}> 
+    <Box sx={{ maxHeight: '83vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+      <CardHeader title={`Recognized Faces`} style={{ textTransform: 'uppercase' }} />
+      <CardContent sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', p: 1 }}>
         {recognizedFaces?.length > 0 ? (
-          <TableContainer component={Paper} sx={{ maxHeight: '100%' }}> 
-            <Table stickyHeader size='small' aria-label="recognized faces table"> 
+          <TableContainer component={Paper} sx={{ maxHeight: '100%' }}>
+            <Table stickyHeader size='small' aria-label="recognized faces table">
               <TableHead>
                 <TableRow sx={{ fontWeight: 'bold' }}>
-                  <TableCell>Photo</TableCell> 
+                  <TableCell>Photo</TableCell>
                   <TableCell>ID/Name</TableCell>
                   <TableCell>In Time</TableCell>
                   <TableCell>Out Time</TableCell>
@@ -54,11 +49,14 @@ function RecognizedFacesPanel({ selectedDate, showSnackbar }) { // Receive showS
               </TableHead>
               <TableBody>
                 {recognizedFaces.map((face) => (
-                  <TableRow key={face.id+face.name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell sx={{ py: 1 }} component="th" scope="row"> 
-                        <Avatar src={face.photo} sx={{width: 100, height: 100}} />
+                  <TableRow key={face.id + face.name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell sx={{ py: 1 }} component="th" scope="row">
+                      <Avatar variant='rounded' src={face.photo} sx={{ width: 100, height: 100 }} />
                     </TableCell>
-                    <TableCell sx={{ py: 1 }}>{face.id}<br /><strong>{face.name}</strong></TableCell>
+                    <TableCell sx={{ py: 1 }}>
+                      <span className='italic text-gray-400'>{face.id}</span><br />
+                      <span className='text-xl font-bold'>{face.name}</span>
+                    </TableCell>
                     <TableCell sx={{ py: 1 }}>{face.inTime}</TableCell>
                     <TableCell sx={{ py: 1 }}>{face.outTime || 'N/A'}</TableCell>
                   </TableRow>
@@ -68,11 +66,10 @@ function RecognizedFacesPanel({ selectedDate, showSnackbar }) { // Receive showS
           </TableContainer>
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>
-             <Typography color="text.secondary">No recognized faces found for {format(selectedDate, "PPP")}.</Typography>
+            <Typography color="text.secondary">No recognized faces found for {format(selectedDate, "PPP")}.</Typography>
           </Box>
         )}
       </CardContent>
-      {/* Snackbar is now handled by the parent (LiveTab) */}
     </Box>
   );
 }
