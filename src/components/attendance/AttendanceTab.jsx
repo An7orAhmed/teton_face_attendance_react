@@ -17,9 +17,8 @@ import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import TextField from '@mui/material/TextField';
 import DownloadIcon from '@mui/icons-material/Download';
-import { getAttendance } from '../../lib/api';
+import { getRecognizedFaces } from '../../lib/api';
 import { format } from 'date-fns';
 
 function AttendanceTab() {
@@ -46,7 +45,7 @@ function AttendanceTab() {
       if (!selectedDate) return;
       try {
         const dateString = format(selectedDate, 'yyyy-MM-dd');
-        const data = await getAttendance(dateString);
+        const data = await getRecognizedFaces(dateString);
         setAttendanceData(data);
       } catch (error) {
         console.error("Failed to fetch attendance:", error);

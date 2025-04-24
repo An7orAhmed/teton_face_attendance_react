@@ -133,7 +133,7 @@ function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, showSnackbar })
             onChange={handleFileChange}
             disabled={isSubmitting}
             InputLabelProps={{ shrink: true }}
-            inputProps={{ accept: "image/*" }}
+            inputProps={{ accept: "image/jpeg" }}
             helperText={fileName || "Select a photo file"}
           />
         </DialogContent>

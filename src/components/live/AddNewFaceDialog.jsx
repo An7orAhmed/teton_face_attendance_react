@@ -160,7 +160,7 @@ function AddNewFaceDialog({ isOpen, setIsOpen, showSnackbar, setIsVideoStreaming
             onChange={handleFileChange}
             disabled={isSubmitting}
             InputLabelProps={{ shrink: true }} // Keep label floated
-            inputProps={{ accept: "image/*" }} // Specify accepted file types
+            inputProps={{ accept: "image/jpeg" }} // Specify accepted file types
             helperText={fileName || "Select a photo file"} // Show filename or helper text
           />
 

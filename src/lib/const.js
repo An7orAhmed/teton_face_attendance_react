@@ -1,2 +1,0 @@
-
-export const HOST = 'http://10.0.0.126:5000';

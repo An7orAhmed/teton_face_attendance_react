@@ -10,13 +10,10 @@ import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import TextField from '@mui/material/TextField';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 
 import AddNewFaceDialog from './AddNewFaceDialog';
-import { useCurrentTime } from '../../hooks/useCurrentTime';
-import { getStats, HOST, startAttendanceApi, startTrainingApi, stopAttendanceApi } from '../../lib/api';
-import { format } from "date-fns";
+import { getStats, startAttendanceApi, startTrainingApi, stopAttendanceApi } from '../../lib/api';
 import { io } from 'socket.io-client';
 
 const socket = io(`http://${location.hostname}:5000`); // location.port
@@ -26,7 +23,6 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   const [isTrainDialogOpen, setIsTrainDialogOpen] = useState(false);
   const [isVideoStreaming, setIsVideoStreaming] = useState(false);
   const [stats, setStats] = useState({ trainedCount: 0, totalImages: 0 });
-  const currentTime = useCurrentTime();
 
   // --- Snackbar State ---
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -70,6 +66,8 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
           if (imgElement) {
             imgElement.src = `data:image/jpeg;base64,${json?.cam_frame}`;
           }
+        } else if (json?.type && typeof json.type === 'string') {
+          showSnackbar(`DETECTED: ${json?.id} | ${json?.name}`, "info");
         }
       } catch {
         console.log("Socket:", data.message);
@@ -169,10 +167,6 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
         {/* Statistics */}
         <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, p: 1.5 }}>
           <Grid container spacing={1} justifyContent="space-evenly" alignItems="center" textAlign="center">
-            <Grid size={4}>
-              <Typography variant="h6" component="p">{format(currentTime, "hh:mm:ss")}</Typography>
-              <Typography variant="caption" color="text.secondary">Current Time</Typography>
-            </Grid>
             <Grid size={4}>
               <Typography variant="h6" component="p">{stats.trainedCount}</Typography>
               <Typography variant="caption" color="text.secondary">Trained Faces</Typography>

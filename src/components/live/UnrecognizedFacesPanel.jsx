@@ -86,7 +86,7 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
           </TableContainer>
         ) : (
            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>
-             <Typography color="text.secondary">No unrecognized faces detected for this date.</Typography>
+             <Typography color="text.secondary">No unrecognized faces detected for {format(selectedDate, "PPP")}.</Typography>
           </Box>
         )}
       </CardContent>

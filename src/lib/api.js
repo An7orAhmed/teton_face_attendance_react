@@ -1,11 +1,27 @@
 
-export const HOST = 'http://192.168.0.169:5000';
+export const HOST = 'http://10.0.0.126:5000';
 
 function makePhotoURL(data, key) {
   return data.map((item) => ({
     ...item,
     [key]: HOST + "/file" + item[key]
   }));
+}
+
+function determineStatus(inTime, outTime) {
+  if (!inTime || inTime === outTime) {
+    return "Absent";
+  }
+
+  const inHour = parseInt(inTime.split(":")[0], 10);
+  const inMinute = parseInt(inTime.split(":")[1], 10);
+
+  // Compare with 10:00 AM
+  if (inHour > 10 || (inHour === 10 && inMinute > 0)) {
+    return "Late";
+  }
+
+  return "Present";
 }
 
 export async function getAllFaces() {
@@ -84,13 +100,22 @@ export async function stopAttendanceApi() {
 }
 
 export async function getRecognizedFaces(dateString) {
-
+  try {
+    const resp = await fetch(`/recognized?date=${dateString}`);
+    console.log(resp);
+    const data = await resp.json();
+    
+    const modified = makePhotoURL(data, 'photo').map(entry => ({
+      ...entry,
+      status: determineStatus(entry.in_time, entry.out_time)
+    }));
+    return modified; // [{ name, id, inTime, outTime, photo }, ...]
+  } catch (error) {
+    console.error("Error fetching recognized faces:", error);
+    return [];
+  }
 }
 
 export async function getUnrecognizedFaces(dateString) {
-
-}
-
-export async function getAttendance(dateString) {
 
 }

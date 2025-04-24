@@ -68,7 +68,7 @@ function RecognizedFacesPanel({ selectedDate, showSnackbar }) { // Receive showS
           </TableContainer>
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>
-             <Typography color="text.secondary">No recognized faces found for this date.</Typography>
+             <Typography color="text.secondary">No recognized faces found for {format(selectedDate, "PPP")}.</Typography>
           </Box>
         )}
       </CardContent>
