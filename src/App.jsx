@@ -48,7 +48,7 @@ function App() {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Container maxWidth="xl" sx={{ py: 2 }} >
         {/* Header Component */}
-        <Header title="Face Recognition Attendance System" />
+        <Header title="CCTV Attendance System" />
 
         {/* MUI Tabs */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'left' }}>

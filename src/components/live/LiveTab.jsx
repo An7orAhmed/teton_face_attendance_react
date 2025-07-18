@@ -44,6 +44,7 @@ function LiveTab() {
           isOpen={isAddToTrainOpen}
           setIsOpen={setIsAddToTrainOpen}
           unrecognizedFace={selectedUnrecognizedFace}
+          selectedDate={selectedDate}
         />
       )}
     </Box>

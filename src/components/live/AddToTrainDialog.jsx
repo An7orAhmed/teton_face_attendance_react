@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -8,8 +8,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
 import { addUnrecognizedToTrainApi } from '../../lib/api';
+import { format } from 'date-fns';
 
-function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, showSnackbar }) {
+function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, showSnackbar, selectedDate }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     uniqueId: '',
@@ -74,14 +75,17 @@ function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, showSnackbar })
 
     // Create FormData for API
     const apiFormData = new FormData();
+    const dateString = format(selectedDate, 'yyyy-MM-dd');
     apiFormData.append('unknownId', unrecognizedFace.unknownId);
     apiFormData.append('uniqueId', formData.uniqueId);
     apiFormData.append('name', formData.name);
+    apiFormData.append('date', dateString);
     apiFormData.append('photo', formData.photoFile);
 
     try {
       handleClose(); // Close
-      await addUnrecognizedToTrainApi(apiFormData);
+      const resp = await addUnrecognizedToTrainApi(apiFormData);
+      showSnackbar(resp, "info");
     } catch (error) {
       showSnackbar(error.message || "An error occurred while adding the face.", "error");
       setIsSubmitting(false); // Allow retry
@@ -140,7 +144,7 @@ function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, showSnackbar })
         <DialogActions sx={{ p: '16px 24px' }}>
           <Button onClick={handleClose} disabled={isSubmitting}>Cancel</Button>
           <Button type="submit" variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? <CircularProgress size={24} /> : 'Add and Train'}
+            {isSubmitting ? <CircularProgress size={24} /> : 'Add To Train'}
           </Button>
         </DialogActions>
       </form>

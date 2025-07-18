@@ -128,12 +128,12 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
     <Box
       sx={{
         aspectRatio: '16 / 9',
-        backgroundColor: '#2a3a3d',
+        backgroundColor: 'grey.300',
         borderRadius: 1,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: 'grey.400',
+        color: 'grey.700',
         textAlign: 'center',
         width: '100%',
         height: '300px',
@@ -184,7 +184,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
 
         {/* Action Buttons */}
         <Stack spacing={2} direction="column">
-          <Button onClick={handleAddNewFace} disabled={isTraining || isVideoStreaming} variant="outlined" color="warning" size='large' fullWidth>Add New Face</Button>
+          <Button onClick={handleAddNewFace} disabled={isTraining || isVideoStreaming} variant="outlined" color="info" size='large' fullWidth>Add New Face</Button>
           <Button onClick={handleStartTraining} disabled={isTraining || isVideoStreaming} variant="outlined" color="error" size='large' fullWidth>Start Training</Button>
           {!isVideoStreaming ? (
             <Button onClick={handleStartAttendance} disabled={isTraining || isVideoStreaming} variant="contained" size='large' color="success" fullWidth>Start Recognition</Button>

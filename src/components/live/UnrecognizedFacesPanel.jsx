@@ -13,11 +13,12 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 
-import { getUnrecognizedFaces } from '../../lib/api';
+import { getUnrecognizedFaces, startClusterApi } from '../../lib/api';
 import { format } from 'date-fns';
 
 function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
   const [unrecognizedFaces, setUnrecognizedFaces] = useState([]);
+  const [isClustering, setIsClustering] = useState(false);
 
   useEffect(() => {
     const fetchFaces = async () => {
@@ -33,9 +34,21 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
     return () => clearInterval(intervalId);
   }, [selectedDate]);
 
+  const handleClusterBtn = async () => {
+    setIsClustering(true);
+    const dateString = format(selectedDate, 'yyyy-MM-dd');
+    await startClusterApi(dateString);
+    setIsClustering(false);
+  }
+
   return (
     <Box sx={{ maxHeight: '83vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
-      <CardHeader title={`Unrecognized Faces`} style={{ textTransform: 'uppercase' }} />
+      <div className='flex items-center justify-between'>
+        <CardHeader title={`Unrecognized Faces`} style={{ textTransform: 'uppercase' }} />
+        <Button size="small" variant="outlined" disabled={isClustering} color='error' onClick={() => handleClusterBtn()}>
+          {isClustering ? 'Proccessing..' : 'Cluster'}
+        </Button>
+      </div>
       <CardContent sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {unrecognizedFaces?.length > 0 ? (
           <TableContainer component={Paper} sx={{ maxHeight: '100%' }}>
@@ -54,13 +67,15 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
                       <Avatar variant='rounded' src={face.photo} sx={{ width: 100, height: 100 }} />
                     </TableCell>
                     <TableCell>
-                      <span className='italic text-gray-400'>{face.unknownId}</span><br />
+                      <span className='italic text-gray-600'>{face.unknownId}</span><br />
                       <span className='text-md font-bold'>{face.detectTime}</span>
                     </TableCell>
                     <TableCell>
-                      <Button size="small" variant="outlined" color='secondary' onClick={() => onAddToTrain(face)}>
-                        Train
-                      </Button>
+                      {
+                        face.detectTime === 'unknown' && <Button size="small" variant="outlined" color='info' onClick={() => onAddToTrain(face)}>
+                          Train
+                        </Button>
+                      }
                     </TableCell>
                   </TableRow>
                 ))}

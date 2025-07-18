@@ -35,7 +35,7 @@ function RecognizedFacesPanel({ selectedDate }) {
   return (
     <Box sx={{ maxHeight: '83vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
       <CardHeader title={`Recognized Faces`} style={{ textTransform: 'uppercase' }} />
-      <CardContent sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', p: 1 }}>
+      <CardContent sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {recognizedFaces?.length > 0 ? (
           <TableContainer component={Paper} sx={{ maxHeight: '100%' }}>
             <Table stickyHeader size='small' aria-label="recognized faces table">
@@ -54,7 +54,7 @@ function RecognizedFacesPanel({ selectedDate }) {
                       <Avatar variant='rounded' src={face.photo} sx={{ width: 100, height: 100 }} />
                     </TableCell>
                     <TableCell sx={{ py: 1 }}>
-                      <span className='italic text-gray-400'>{face.id}</span><br />
+                      <span className='italic text-gray-600'>{face.id}</span><br />
                       <span className='text-xl font-bold'>{face.name}</span>
                     </TableCell>
                     <TableCell sx={{ py: 1 }}>{face.inTime}</TableCell>
