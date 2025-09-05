@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';

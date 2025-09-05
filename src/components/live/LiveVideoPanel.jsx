@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
@@ -13,10 +13,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 
 import AddNewFaceDialog from './AddNewFaceDialog';
-import { getStats, startAttendanceApi, startTrainingApi, stopAttendanceApi } from '../../lib/api';
+import { getStats, HOST, startAttendanceApi, startTrainingApi, stopAttendanceApi } from '../../lib/api';
 import { io } from 'socket.io-client';
 
-const socket = io(`http://${location.hostname}:5000`); // location.port
+const socket = io(HOST); // location.port
 
 function LiveVideoPanel({ selectedDate, onDateChange }) {
   const [isTraining, setIsTraining] = useState(false);

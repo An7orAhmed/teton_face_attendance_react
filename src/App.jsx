@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -9,6 +10,7 @@ import Header from './components/Header';
 import LiveTab from './components/live/LiveTab';
 import AttendanceTab from './components/attendance/AttendanceTab';
 import FaceTab from './components/faces/Faces';
+import Login from './components/Login';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -37,7 +39,7 @@ function a11yProps(index) {
   };
 }
 
-function App() {
+function MainApp() {
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (event, newValue) => {
@@ -73,6 +75,32 @@ function App() {
         {/* Note: Snackbar/Toasts are handled within components for this example */}
       </Container>
     </LocalizationProvider>
+  );
+}
+
+function AuthWrapper() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    setIsAuthenticated(!!token);
+  }, [location]);
+
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/app" element={isAuthenticated ? <MainApp /> : <Navigate to="/login" />} />
+      <Route path="/" element={<Navigate to={isAuthenticated ? "/app" : "/login"} />} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AuthWrapper />
+    </Router>
   );
 }
 

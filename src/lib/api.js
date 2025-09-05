@@ -1,5 +1,6 @@
 
-export const HOST = 'http://192.168.0.131:5000';
+//export const HOST = 'http://192.168.0.201:5000';
+export const HOST = 'http://182.160.114.137:2929';
 
 function makePhotoURL(data, key) {
   return data.map((item) => ({
@@ -137,6 +138,23 @@ export async function getUnrecognizedFaces(dateString) {
     return modified;
   } catch (error) {
     console.error("Error fetching unrecognized faces:", error);
+  }
+}
+
+export async function loginApi(username, password) {
+  try {
+    const resp = await fetch(`${HOST}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await resp.json();
+    return data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
   }
 }
 
