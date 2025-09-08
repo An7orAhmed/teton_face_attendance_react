@@ -14,7 +14,7 @@ function Login() {
       const result = await loginApi(username, password);
       if (result.success) {
         localStorage.setItem('authToken', result.token);
-        navigate('/app');
+        navigate('/');
       } else {
         setError('Invalid credentials');
       }

@@ -90,8 +90,7 @@ function AuthWrapper() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/app" element={isAuthenticated ? <MainApp /> : <Navigate to="/login" />} />
-      <Route path="/" element={<Navigate to={isAuthenticated ? "/app" : "/login"} />} />
+      <Route path="/" element={isAuthenticated ? <MainApp /> : <Navigate to="/login" />} />
     </Routes>
   );
 }
