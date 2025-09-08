@@ -79,7 +79,7 @@ function MainApp() {
 }
 
 function AuthWrapper() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('authToken'));
   const location = useLocation();
 
   useEffect(() => {
@@ -90,7 +90,8 @@ function AuthWrapper() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={isAuthenticated ? <MainApp /> : <Navigate to="/login" />} />
+      <Route path="/app" element={isAuthenticated ? <MainApp /> : <Navigate to="/login" />} />
+      <Route path="/" element={<Navigate to={isAuthenticated ? "/app" : "/login"} />} />
     </Routes>
   );
 }
