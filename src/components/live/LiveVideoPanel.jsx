@@ -127,7 +127,6 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   const VideoPreview = () => (
     <Box
       sx={{
-        aspectRatio: '16 / 9',
         backgroundColor: 'grey.300',
         borderRadius: 1,
         display: 'flex',
@@ -136,12 +135,13 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
         color: 'grey.700',
         textAlign: 'center',
         width: '100%',
-        height: '300px',
+        flexGrow: 1,
+        minHeight: '300px',
       }}
     >
       {isVideoStreaming ? (
-        <Box>
-          <img id="video-stream" className="w-full" />
+        <Box sx={{ width: '100%', height: '100%' }}>
+          <img id="video-stream" className="w-full h-full max-h-[300px] object-fill" />
         </Box>
       ) : (
         <Box>
@@ -155,7 +155,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   return (
     <Box sx={{ maxHeight: '83vh', overflow: 'auto' }}>
       <CardHeader title={`Live Cam`} style={{ textTransform: 'uppercase' }} />
-      <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
         {/* Date Selector - Using MUI X DatePicker */}
         <DatePicker
           label="Select Date"
