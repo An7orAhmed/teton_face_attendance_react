@@ -33,7 +33,7 @@ function RecognizedFacesPanel({ selectedDate }) {
   }, [selectedDate]);
 
   return (
-    <Box sx={{ maxHeight: '83vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ maxHeight: '90vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
       <CardHeader title={`Recognized Faces`} style={{ textTransform: 'uppercase' }} />
       <CardContent sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {recognizedFaces?.length > 0 ? (

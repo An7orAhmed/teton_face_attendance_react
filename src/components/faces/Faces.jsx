@@ -27,7 +27,7 @@ function FaceTab() {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <CardContent sx={{ pt: 1, maxHeight: '70vh', overflow: 'auto' }}>
+      <CardContent sx={{ pt: 1, maxHeight: '88vh', overflow: 'auto' }}>
         {faceData?.length > 0 ? (
           <TableContainer component={Paper}>
             <Table stickyHeader size="small" aria-label="faces table">

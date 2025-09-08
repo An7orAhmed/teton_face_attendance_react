@@ -42,8 +42,8 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
   }
 
   return (
-    <Box sx={{ maxHeight: '83vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
-      <div className='flex items-center justify-between'>
+    <Box sx={{ maxHeight: '90vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+      <div className='flex items-center justify-between pr-4'>
         <CardHeader title={`Unrecognized Faces`} style={{ textTransform: 'uppercase' }} />
         <Button size="small" variant="outlined" disabled={isClustering} color='error' onClick={() => handleClusterBtn()}>
           {isClustering ? 'Proccessing..' : 'Cluster'}

@@ -127,7 +127,7 @@ function AttendanceTab() {
         }
         sx={{ '.MuiCardHeader-action': { alignSelf: { xs: 'stretch', sm: 'center' }, mt: { xs: 2, sm: 0 }, ml: { sm: 0 } } }}
       />
-      <CardContent sx={{ pt: 1, maxHeight: '70vh', overflow: 'auto' }}>
+      <CardContent sx={{ pt: 1, maxHeight: '77vh', overflow: 'auto' }}>
         {attendanceData?.length > 0 ? (
           <TableContainer component={Paper}>
             <Table stickyHeader size="small" aria-label="attendance table">
