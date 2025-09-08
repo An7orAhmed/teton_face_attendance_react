@@ -50,7 +50,7 @@ function MainApp() {
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Container maxWidth="xl" sx={{ py: 2 }} >
         {/* Header Component */}
-        <Header title="CCTV Attendance System" />
+        <Header title="AI Attendance System" />
 
         {/* MUI Tabs */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'left' }}>
