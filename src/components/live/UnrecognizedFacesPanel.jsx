@@ -25,7 +25,7 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
       if (!selectedDate) return;
       const dateString = format(selectedDate, 'yyyy-MM-dd');
       const data = await getUnrecognizedFaces(dateString);
-      setUnrecognizedFaces(data);
+      setUnrecognizedFaces(data.reverse()); // Show latest first
     };
 
     fetchFaces();

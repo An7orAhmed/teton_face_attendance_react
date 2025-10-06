@@ -14,85 +14,89 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import DownloadIcon from '@mui/icons-material/Download';
 import { getRecognizedFaces } from '../../lib/api';
-import { format } from 'date-fns';
+import { format, isWithinInterval, parseISO } from 'date-fns';
+import { toast } from 'react-toastify';
 
 function AttendanceTab() {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [selectedPerson, setSelectedPerson] = useState('');
   const [attendanceData, setAttendanceData] = useState([]);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
 
-  const showSnackbar = (message, severity = 'info') => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarOpen(true);
-  };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') return;
-    setSnackbarOpen(false);
-  };
-
-  // Fetch attendance data
+  // Fetch attendance data (by single date)
   useEffect(() => {
     const fetchAttendance = async () => {
-      if (!selectedDate) return;
       try {
+        if (!selectedDate) return;
         const dateString = format(selectedDate, 'yyyy-MM-dd');
         const data = await getRecognizedFaces(dateString);
-        setAttendanceData(data);
-      } catch (error) {
-        console.error("Failed to fetch attendance:", error);
-        showSnackbar("Could not fetch attendance data.", "error");
+        setAttendanceData(data.reverse());
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to fetch attendance.");
       }
     };
-
     fetchAttendance();
   }, [selectedDate]);
 
-  // Handle download action
+  // Apply filters (person + date range)
+  const filteredData = attendanceData.filter((row) => {
+    const matchPerson = selectedPerson ? row.name === selectedPerson : true;
+    let matchDate = true;
+
+    if (startDate && endDate) {
+      try {
+        const recordDate = parseISO(row.date);
+        matchDate = isWithinInterval(recordDate, { start: startDate, end: endDate });
+      } catch {
+        matchDate = true;
+      }
+    }
+
+    return matchPerson && matchDate;
+  });
+
+  // Summary stats
+  const totalHours = filteredData.reduce((sum, r) => sum + (r.workHour || 0), 0);
+  const presentCount = filteredData.filter((r) => r.status === 'Present').length;
+  const absentCount = filteredData.filter((r) => r.status === 'Absent').length;
+
+  // Download CSV
   const handleDownload = () => {
-    if (attendanceData.length === 0) {
-      showSnackbar("No attendance data to download.", "warning");
+    if (filteredData.length === 0) {
+      toast.warning("No attendance to download.");
       return;
     }
 
-    console.log("Download triggered for date:", format(selectedDate, 'yyyy-MM-dd'));
-    showSnackbar(`Downloading attendance for ${format(selectedDate, "PPP")}. (Mock)`, "info");
-
-    const headers = ["ID", "Name", "Date", "In Time", "Out Time", "Status"];
+    const headers = ["Date", "ID", "Name", "In Time", "Out Time", "Work Hours", "Status"];
     const csvContent = [
       headers.join(","),
-      ...attendanceData.map(row => [
-        `"${row.id}"`, `"${row.name}"`, `"${row.date}"`,
-        `"${row.inTime || 'N/A'}"`, `"${row.outTime || 'N/A'}"`, `"${row.status}"`
+      ...filteredData.map(r => [
+        `"${r.date}"`, `"${r.id}"`, `"${r.name}"`,
+        `"${r.inTime || 'N/A'}"`, `"${r.outTime || 'N/A'}"`,
+        `"${r.workHour || 0}"`, `"${r.status}"`
       ].join(","))
     ].join("\n");
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
 
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", `attendance_${format(selectedDate, 'yyyy-MM-dd')}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } else {
-      showSnackbar("Download not supported in this browser.", "error");
-    }
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = `attendance_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
-  // Determine chip color based on status
   const getStatusChipColor = (status) => {
     switch (status) {
       case 'Present': return 'success';
@@ -100,59 +104,89 @@ function AttendanceTab() {
       case 'Late': return 'warning';
       default: return 'default';
     }
-  }
+  };
+
+  const uniquePersons = [...new Set(attendanceData.map(r => r.name))];
 
   return (
     <Box sx={{ width: '100%' }}>
       <CardHeader
         title={
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} >
-            {/* Date Selector */}
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            {/* Person Filter */}
+            <FormControl size="small" sx={{ minWidth: 160 }}>
+              <InputLabel>Person</InputLabel>
+              <Select
+                value={selectedPerson}
+                label="Person"
+                onChange={(e) => setSelectedPerson(e.target.value)}
+              >
+                <MenuItem value="">All</MenuItem>
+                {uniquePersons.map((p) => (
+                  <MenuItem key={p} value={p}>{p}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Single Date Picker */}
             <DatePicker
-              label="Select Date"
+              label="Single Date"
               value={selectedDate}
               onChange={(newValue) => setSelectedDate(newValue)}
-              slotProps={{ textField: { variant: 'outlined' }, size: 'small', sx: { minWidth: { sm: 240 } } }}
+              slotProps={{ textField: { size: 'small' } }}
             />
-            {/* Download Button */}
-            <Button
-              variant="contained"
-              startIcon={<DownloadIcon />}
-              size='medium'
-              onClick={handleDownload}
-            >
+
+            {/* Start Date Picker */}
+            <DatePicker
+              label="Start Date"
+              value={startDate}
+              onChange={(newValue) => setStartDate(newValue)}
+              slotProps={{ textField: { size: 'small' } }}
+            />
+
+            {/* End Date Picker */}
+            <DatePicker
+              label="End Date"
+              value={endDate}
+              onChange={(newValue) => setEndDate(newValue)}
+              slotProps={{ textField: { size: 'small' } }}
+            />
+
+            {/* Download */}
+            <Button variant="contained" startIcon={<DownloadIcon />} onClick={handleDownload}>
               Download
             </Button>
           </Stack>
         }
-        sx={{ '.MuiCardHeader-action': { alignSelf: { xs: 'stretch', sm: 'center' }, mt: { xs: 2, sm: 0 }, ml: { sm: 0 } } }}
       />
-      <CardContent sx={{ pt: 1, maxHeight: '77vh', overflow: 'auto' }}>
-        {attendanceData?.length > 0 ? (
+      <CardContent sx={{ pt: 1, maxHeight: '70vh', overflow: 'auto' }}>
+        {filteredData.length > 0 ? (
           <TableContainer component={Paper}>
-            <Table stickyHeader size="small" aria-label="attendance table">
+            <Table stickyHeader size="small">
               <TableHead>
-                <TableRow sx={{ fontWeight: 'bold' }} >
+                <TableRow>
+                  <TableCell>Date</TableCell>
                   <TableCell>ID</TableCell>
                   <TableCell>Name</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>In Time</TableCell>
-                  <TableCell>Out Time</TableCell>
+                  <TableCell>In</TableCell>
+                  <TableCell>Out</TableCell>
+                  <TableCell>Work Hours</TableCell>
                   <TableCell>Status</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {attendanceData.map((record) => (
-                  <TableRow key={`${record.id}-${record.date}`} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell component="th" scope="row" sx={{ py: 3 }}>{record.id}</TableCell>
-                    <TableCell>{record.name}</TableCell>
-                    <TableCell>{record.date}</TableCell>
-                    <TableCell>{record.inTime || 'N/A'}</TableCell>
-                    <TableCell>{record.outTime || 'N/A'}</TableCell>
+                {filteredData.map((rec) => (
+                  <TableRow key={`${rec.id}-${rec.date}`}>
+                    <TableCell>{rec.date}</TableCell>
+                    <TableCell>{rec.id}</TableCell>
+                    <TableCell>{rec.name}</TableCell>
+                    <TableCell>{rec.inTime || "N/A"}</TableCell>
+                    <TableCell>{rec.outTime || "N/A"}</TableCell>
+                    <TableCell>{rec.workHour || 0} Hrs</TableCell>
                     <TableCell>
                       <Chip
-                        label={record.status}
-                        color={getStatusChipColor(record.status)}
+                        label={rec.status}
+                        color={getStatusChipColor(rec.status)}
                         size="small"
                       />
                     </TableCell>
@@ -162,24 +196,19 @@ function AttendanceTab() {
             </Table>
           </TableContainer>
         ) : (
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 4 }}>
-            <Typography color="text.secondary">
-              No attendance records found for {selectedDate ? format(selectedDate, "PPP") : 'the selected date'}.
-            </Typography>
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography>No data found.</Typography>
           </Box>
         )}
       </CardContent>
-      <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 1 }}>
+      <CardActions sx={{ justifyContent: 'space-between' }}>
         <Typography variant="caption" color="text.secondary">
-          Showing {attendanceData?.length} record(s).
+          Showing {filteredData.length} record(s).
+        </Typography>
+        <Typography variant="body2">
+          Total: {totalHours} hrs | Present: {presentCount} | Absent: {absentCount}
         </Typography>
       </CardActions>
-      {/* Snackbar for local notifications */}
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

@@ -2,6 +2,10 @@
 //export const HOST = 'http://192.168.0.201:5000';
 export const HOST = 'http://182.160.114.137:2929';
 
+export const adminUsers = [
+  'admin@tetonelectronics.com',
+];
+
 function makePhotoURL(data, key) {
   return data.map((item) => ({
     ...item,
@@ -16,17 +20,36 @@ function determineStatus(inTime, outTime) {
   const inHour = parseInt(inTime.split(":")[0], 10);
   const inMinute = parseInt(inTime.split(":")[1], 10);
   const outHour = parseInt(outTime.split(":")[0], 10);
+  const ouMinute = parseInt(outTime.split(":")[1], 10);
 
-  // Compare with 10:00 AM
-  if (inHour > 10 || (inHour === 10 && inMinute > 0)) {
+  // Compare with 8:00 AM
+  if (inHour > 8 || (inHour === 8 && inMinute > 0)) {
     return "Late";
   }
 
-  if(inHour === outHour) {
+  if(inHour === outHour && inMinute === ouMinute) {
     return "Absent";
   }
 
   return "Present";
+}
+
+function determineWorkHour(inTime, outTime) {
+  if (inTime === '' || outTime === '') return 0;
+  if (inTime === outTime) return 0;
+
+  const inHour = parseInt(inTime.split(":")[0], 10);
+  const inMinute = parseInt(inTime.split(":")[1], 10);
+  const outHour = parseInt(outTime.split(":")[0], 10);
+  const ouMinute = parseInt(outTime.split(":")[1], 10);
+
+  let totalHours = outHour - inHour;
+  let totalMinutes = ouMinute - inMinute;
+  if (totalMinutes < 0) {
+    totalHours -= 1;
+    totalMinutes += 60;
+  }
+  return totalHours + totalMinutes / 60;
 }
 
 export async function getAllFaces() {
@@ -122,7 +145,8 @@ export async function getRecognizedFaces(dateString) {
     
     const modified = makePhotoURL(data, 'photo').map(entry => ({
       ...entry,
-      status: determineStatus(entry.inTime, entry.outTime)
+      status: determineStatus(entry.inTime, entry.outTime),
+      workHour: determineWorkHour(entry.inTime, entry.outTime).toFixed(2)
     }));
     return modified; // [{ name, id, inTime, outTime, photo }, ...]
   } catch (error) {

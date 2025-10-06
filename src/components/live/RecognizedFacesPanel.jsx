@@ -23,7 +23,7 @@ function RecognizedFacesPanel({ selectedDate }) {
       if (!selectedDate) return;
       const dateString = format(selectedDate, 'yyyy-MM-dd');
       const data = await getRecognizedFaces(dateString);
-      setRecognizedFaces(data);
+      setRecognizedFaces(data.reverse()); // Show latest first
     };
 
     fetchFaces();

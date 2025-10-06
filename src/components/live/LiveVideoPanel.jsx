@@ -7,10 +7,9 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
+import { toast } from 'react-toastify';
 
 import AddNewFaceDialog from './AddNewFaceDialog';
 import { getStats, HOST, startAttendanceApi, startTrainingApi, stopAttendanceApi } from '../../lib/api';
@@ -24,24 +23,6 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   const [isVideoStreaming, setIsVideoStreaming] = useState(false);
   const [stats, setStats] = useState({ trainedCount: 0, totalImages: 0 });
 
-  // --- Snackbar State ---
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
-
-  const showSnackbar = (message, severity = 'success') => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setSnackbarOpen(true);
-  };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen(false);
-  };
-
   // Fetch initial stats
   useEffect(() => {
     const fetchStats = async () => {
@@ -50,10 +31,11 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
         setStats(data);
         if (data?.isCapturing || data?.isRecognizing) {
           setIsVideoStreaming(true);
+          toast.info("Camera is currently active.");
         }
       } catch (error) {
         console.error("Failed to fetch stats:", error);
-        showSnackbar("Could not fetch statistics.", "error");
+        toast.error("Could not fetch statistics.");
       }
     };
     fetchStats();
@@ -67,11 +49,13 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
             imgElement.src = `data:image/jpeg;base64,${json?.cam_frame}`;
           }
         } else if (json?.type && typeof json.type === 'string') {
-          showSnackbar(`DETECTED: ${json?.id} | ${json?.name}`, "info");
+          setTimeout(() => {
+            toast.info(`DETECTED ID: ${json?.id}, ${json?.name}`);
+          }, 0);
         }
       } catch {
         console.log("Socket:", data.message);
-        showSnackbar(data.message, "info");
+        setTimeout(() => toast.error(data.message), 0);
         if (data.message?.includes('stopped')) {
           setIsVideoStreaming(false);
         } else if (data.message?.includes('Training completed')) {
@@ -97,7 +81,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
       await startTrainingApi();
     } catch (error) {
       console.error("Failed to start training:", error);
-      showSnackbar("Could not start training.", "error");
+      toast.error("Could not start training.");
     }
   }
 
@@ -105,10 +89,10 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
     try {
       await startAttendanceApi();
       setIsVideoStreaming(true);
-      showSnackbar("Attendance started.", "success");
+      toast.success("Attendance started.");
     } catch (error) {
       console.error("Failed to start attendance:", error);
-      showSnackbar("Could not start attendance.", "error");
+      toast.error("Could not start attendance!");
     }
   };
 
@@ -116,10 +100,10 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
     try {
       await stopAttendanceApi();
       setIsVideoStreaming(false);
-      showSnackbar("Attendance stopped.", "info");
+      toast.info("Attendance stopped.");
     } catch (error) {
       console.error("Failed to stop attendance:", error);
-      showSnackbar("Could not stop attendance.", "error");
+      toast.error("Could not stop attendance!");
     }
   };
 
@@ -201,14 +185,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
       </CardActions>
 
       {/* Train New Face Dialog */}
-      <AddNewFaceDialog isOpen={isTrainDialogOpen} setIsOpen={setIsTrainDialogOpen} showSnackbar={showSnackbar} setIsVideoStreaming={setIsVideoStreaming} />
-
-      {/* Snackbar for notifications */}
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+      <AddNewFaceDialog isOpen={isTrainDialogOpen} setIsOpen={setIsTrainDialogOpen} setIsVideoStreaming={setIsVideoStreaming} />
     </Box>
   );
 }

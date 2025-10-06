@@ -9,7 +9,7 @@ import LiveTab from './components/live/LiveTab';
 import AttendanceTab from './components/attendance/AttendanceTab';
 import FaceTab from './components/faces/Faces';
 import Login from './components/Login';
-import { Divider } from '@mui/material';
+import { ToastContainer } from 'react-toastify';
 
 
 function MainApp() {
@@ -40,6 +40,7 @@ function MainApp() {
           <Outlet />
         </Box>
       </Box>
+      <ToastContainer position="bottom-right" autoClose={3000} />
     </LocalizationProvider>
   );
 }

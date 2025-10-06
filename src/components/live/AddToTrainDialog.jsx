@@ -9,8 +9,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
 import { addUnrecognizedToTrainApi } from '../../lib/api';
 import { format } from 'date-fns';
+import { toast } from 'react-toastify';
 
-function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, showSnackbar, selectedDate }) {
+function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, selectedDate }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     uniqueId: '',
@@ -68,7 +69,7 @@ function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, showSnackbar, s
 
     // Basic Validation
     if (!formData.uniqueId || !formData.name || !formData.photoFile || !unrecognizedFace?.unknownId) {
-      showSnackbar("Please provide Unique ID, Name, select a Photo, and ensure an unrecognized face was selected.", "error");
+      toast.error("Please provide Unique ID, Name, select a Photo, and ensure an unrecognized face was selected.");
       setIsSubmitting(false);
       return;
     }
@@ -85,9 +86,9 @@ function AddToTrainDialog({ isOpen, setIsOpen, unrecognizedFace, showSnackbar, s
     try {
       handleClose(); // Close
       const resp = await addUnrecognizedToTrainApi(apiFormData);
-      showSnackbar(resp, "info");
+      toast.info(resp);
     } catch (error) {
-      showSnackbar(error.message || "An error occurred while adding the face.", "error");
+      toast.error(error.message || "An error occurred while adding the face.");
       setIsSubmitting(false); // Allow retry
     }
   };
