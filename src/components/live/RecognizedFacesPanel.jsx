@@ -30,9 +30,9 @@ function RecognizedFacesPanel({ selectedDate }) {
     {
       field: 'photo',
       headerName: 'Photo',
-      width: 80,
+      width: 60,
       renderCell: (params) => (
-        <Avatar variant="rounded" src={params.value} sx={{ width: 60, height: 60 }} />
+        <Avatar variant="rounded" src={params.value} sx={{ width: 50, height: 50 }} />
       ),
       sortable: false,
     },
@@ -60,7 +60,7 @@ function RecognizedFacesPanel({ selectedDate }) {
   ];
 
   return (
-    <Box sx={{ maxHeight: '87vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ height:'100%', maxHeight: '80vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
       <CardHeader title="Recognized Faces" sx={{ textTransform: 'uppercase' }} />
       <CardContent sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', p: 0 }}>
         {recognizedFaces?.length > 0 ? (
@@ -70,7 +70,7 @@ function RecognizedFacesPanel({ selectedDate }) {
             pageSize={10}
             rowsPerPageOptions={[10, 25, 50]}
             disableSelectionOnClick
-            sx={{ border: 0, height: '100%' }}
+            sx={{ border: 0, height: '100%'}}
           />
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>

@@ -31,9 +31,9 @@ function MainApp() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#F8FAFD' }}>
         <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
-        <Box component="main" sx={{ flexGrow: 1, p: 3, bgcolor: 'background.default' }}>
+        <Box component="main" sx={{ flexGrow: 1, p: 3, bgcolor: '#F8FAFD' }}>
           <Typography variant="h4" component="h1" sx={{ pb: 3, pl: 3, color: 'primary.main', fontWeight: 'bold' }}>
             {getPageTitle()}
           </Typography>

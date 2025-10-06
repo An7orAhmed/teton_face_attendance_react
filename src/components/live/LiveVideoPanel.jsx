@@ -138,7 +138,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   );
 
   return (
-    <Box sx={{ maxHeight: '87vh', overflow: 'auto' }}>
+    <Box sx={{ maxHeight: '80vh', overflow: 'auto' }}>
       <CardHeader title={`Live Cam`} style={{ textTransform: 'uppercase' }} />
       <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
         {/* Date Selector - Using MUI X DatePicker */}

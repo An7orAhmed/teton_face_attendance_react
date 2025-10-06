@@ -72,7 +72,7 @@ function UnrecognizedFacesPanel({ selectedDate, onAddToTrain }) {
   ];
 
   return (
-    <Box sx={{ maxHeight: '87vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ height:'100%', maxHeight: '80vh', overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2 }}>
         <Typography variant="h6" sx={{ textTransform: 'uppercase' }}>
           Unrecognized Faces

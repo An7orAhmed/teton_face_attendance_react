@@ -65,7 +65,7 @@ function AttendanceTab() {
   });
 
   // Summary stats
-  const totalHours = filteredData.reduce((sum, r) => sum + (r.workHour || 0), 0);
+  const totalHours = filteredData.reduce((sum, r) => sum + (parseInt(r.workHour) || 0), 0);
   const presentCount = filteredData.filter((r) => r.status === 'Present').length;
   const absentCount = filteredData.filter((r) => r.status === 'Absent').length;
 
@@ -226,7 +226,7 @@ function AttendanceTab() {
 
       {/* Data Grid */}
       <Card sx={{ width: '100%' }}>
-        <CardContent sx={{ height: '50vh', p: 0 }}>
+        <CardContent sx={{ height: '100%', maxHeight: '50vh', p: 0 }}>
           <DataGrid
             rows={filteredData.map((row, index) => ({ ...row, id: row.id || index }))}
             columns={columns}
@@ -236,11 +236,6 @@ function AttendanceTab() {
             sx={{ border: 0, height: '100%' }}
           />
         </CardContent>
-        <CardActions sx={{ justifyContent: 'flex-end', px: 2 }}>
-          <Typography variant="caption" color="text.secondary">
-            Showing {filteredData.length} record(s).
-          </Typography>
-        </CardActions>
       </Card>
     </Box>
   );
