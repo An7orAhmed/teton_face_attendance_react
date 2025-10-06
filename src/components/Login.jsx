@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginApi } from '../lib/api';
+import { loginApi, adminUsers } from '../lib/api';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -14,6 +14,7 @@ function Login() {
       const result = await loginApi(username, password);
       if (result.success) {
         localStorage.setItem('authToken', result.token);
+        localStorage.setItem('userRole', adminUsers.includes(username) ? 'admin' : 'user');
         navigate('/');
       } else {
         setError('Invalid credentials');

@@ -68,45 +68,70 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
     <>
       <Drawer
         variant="permanent"
-        className={`${collapsed ? 'w-16' : 'w-60'} flex-shrink-0`}
-        PaperProps={{
-          className: `${collapsed ? 'w-16' : 'w-60'} box-border bg-slate-800 text-white transition-all duration-300 overflow-x-hidden`,
+        sx={{
+          width: collapsed ? 64 : 240,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: collapsed ? 64 : 240,
+            boxSizing: 'border-box',
+            bgcolor: 'grey.900',
+            color: 'white',
+            transition: 'width 0.3s',
+            overflowX: 'hidden',
+          },
         }}
       >
-        <Box className={`p-${collapsed ? 1 : 2} flex items-center ${collapsed ? 'justify-center' : 'justify-between'} ${collapsed ? 'min-h-16' : 'min-h-32'}`}>
+        <Box
+          sx={{
+            p: collapsed ? 1 : 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: collapsed ? 'center' : 'space-between',
+            minHeight: collapsed ? 64 : 128,
+          }}
+        >
           {!collapsed && (
-            <Box className="text-center flex-grow">
-              <div className='flex items-center justify-between'>
+            <Box sx={{ textAlign: 'center', flexGrow: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <img src={Logo} alt="Logo" style={{ width: '100%', maxWidth: '150px' }} />
                 <IconButton
                   onClick={toggleCollapsed}
-                  className="text-white bg-white/10 hover:bg-white/20"
+                  sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
                 >
                   <ChevronLeftIcon />
                 </IconButton>
-              </div>
-              <Typography variant="h6" className="pt-2 text-black/70">
+              </Box>
+              <Typography variant="h6" sx={{ pt: 2, color: 'grey.300' }}>
                 AI Attendance System
               </Typography>
             </Box>
           )}
-          {collapsed && <IconButton
-            onClick={toggleCollapsed}
-            className="text-white bg-white/10 hover:bg-white/20"
-          >
-            <ChevronRightIcon />
-          </IconButton>}
+          {collapsed && (
+            <IconButton
+              onClick={toggleCollapsed}
+              sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+          )}
         </Box>
-        {!collapsed && <Divider className="bg-white/20" />}
-        <List className={`${collapsed ? 'mt-2' : ''}`}>
+        {!collapsed && <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)' }} />}
+        <List sx={{ mt: collapsed ? 1 : 0 }}>
           {menuItems.map((item) => (
             <ListItem key={item.text} disablePadding>
               <ListItemButton
                 onClick={() => handleNavigation(item.path)}
                 selected={location.pathname === item.path}
-                className={`${collapsed ? 'justify-center' : ''} hover:bg-white/10 ${location.pathname === item.path ? 'bg-white/20 hover:bg-white/30' : ''}`}
+                sx={{
+                  justifyContent: collapsed ? 'center' : 'initial',
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
+                  ...(location.pathname === item.path && {
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+                  }),
+                }}
               >
-                <ListItemIcon className={`text-white ${collapsed ? 'min-w-0' : 'min-w-14'}`}>
+                <ListItemIcon sx={{ color: 'white', minWidth: collapsed ? 0 : 56 }}>
                   {item.icon}
                 </ListItemIcon>
                 {!collapsed && <ListItemText primary={item.text} />}
@@ -116,14 +141,19 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         </List>
         <Box sx={{ flexGrow: 1 }} />
         <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)' }} />
-        <Box className="p-2">
+        <Box sx={{ p: 1 }}>
           <Button
             fullWidth
             variant="contained"
             color="secondary"
             startIcon={<LogoutIcon />}
             onClick={handleLogoutClick}
-            className={`bg-yellow-500 hover:bg-yellow-600 ${collapsed ? 'min-w-12 px-1' : ''}`}
+            sx={{
+              bgcolor: 'warning.main',
+              '&:hover': { bgcolor: 'warning.dark' },
+              minWidth: collapsed ? 48 : 'auto',
+              px: collapsed ? 1 : 'auto',
+            }}
           >
             {!collapsed && 'Logout'}
           </Button>

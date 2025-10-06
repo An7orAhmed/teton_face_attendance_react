@@ -31,10 +31,10 @@ function MainApp() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box className="flex min-h-screen bg-gray-100">
+      <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
         <Sidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
-        <Box component="main" className="flex-grow p-3 bg-gray-100">
-          <Typography variant="h4" component="h1" className="pb-3 pl-3 text-red-700 font-bold">
+        <Box component="main" sx={{ flexGrow: 1, p: 3, bgcolor: 'background.default' }}>
+          <Typography variant="h4" component="h1" sx={{ pb: 3, pl: 3, color: 'primary.main', fontWeight: 'bold' }}>
             {getPageTitle()}
           </Typography>
           <Outlet />

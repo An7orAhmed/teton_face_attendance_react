@@ -22,6 +22,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   const [isTrainDialogOpen, setIsTrainDialogOpen] = useState(false);
   const [isVideoStreaming, setIsVideoStreaming] = useState(false);
   const [stats, setStats] = useState({ trainedCount: 0, totalImages: 0 });
+  const isAdmin = localStorage.getItem('userRole') === 'admin';
 
   // Fetch initial stats
   useEffect(() => {
@@ -137,7 +138,7 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
   );
 
   return (
-    <Box sx={{ maxHeight: '90vh', overflow: 'auto' }}>
+    <Box sx={{ maxHeight: '87vh', overflow: 'auto' }}>
       <CardHeader title={`Live Cam`} style={{ textTransform: 'uppercase' }} />
       <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, height: '100%' }}>
         {/* Date Selector - Using MUI X DatePicker */}
@@ -167,15 +168,17 @@ function LiveVideoPanel({ selectedDate, onDateChange }) {
 
 
         {/* Action Buttons */}
-        <Stack spacing={2} direction="column">
-          <Button onClick={handleAddNewFace} disabled={isTraining || isVideoStreaming} variant="outlined" color="info" size='large' fullWidth>Add New Face</Button>
-          <Button onClick={handleStartTraining} disabled={isTraining || isVideoStreaming} variant="outlined" color="error" size='large' fullWidth>Start Training</Button>
-          {!isVideoStreaming ? (
-            <Button onClick={handleStartAttendance} disabled={isTraining || isVideoStreaming} variant="contained" size='large' color="success" fullWidth>Start Recognition</Button>
-          ) : (
-            <Button onClick={handleStopAttendance} disabled={isTraining} variant="contained" size='large' color="error" fullWidth>Stop Recognition</Button>
-          )}
-        </Stack>
+        {isAdmin && (
+          <Stack spacing={2} direction="column">
+            <Button onClick={handleAddNewFace} disabled={isTraining || isVideoStreaming} variant="outlined" color="info" size='large' fullWidth>Add New Face</Button>
+            <Button onClick={handleStartTraining} disabled={isTraining || isVideoStreaming} variant="outlined" color="error" size='large' fullWidth>Start Training</Button>
+            {!isVideoStreaming ? (
+              <Button onClick={handleStartAttendance} disabled={isTraining || isVideoStreaming} variant="contained" size='large' color="success" fullWidth>Start Recognition</Button>
+            ) : (
+              <Button onClick={handleStopAttendance} disabled={isTraining} variant="contained" size='large' color="error" fullWidth>Stop Recognition</Button>
+            )}
+          </Stack>
+        )}
       </CardContent>
 
       <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 1 }}>

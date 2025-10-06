@@ -1,25 +1,25 @@
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import CardActions from '@mui/material/CardActions';
 import Typography from '@mui/material/Typography';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DataGrid } from '@mui/x-data-grid';
 import DownloadIcon from '@mui/icons-material/Download';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 import { getRecognizedFaces } from '../../lib/api';
 import { format, isWithinInterval, parseISO } from 'date-fns';
 import { toast } from 'react-toastify';
@@ -108,12 +108,84 @@ function AttendanceTab() {
 
   const uniquePersons = [...new Set(attendanceData.map(r => r.name))];
 
+  const columns = [
+    { field: 'date', headerName: 'Date', width: 120 },
+    { field: 'id', headerName: 'ID', width: 80 },
+    { field: 'name', headerName: 'Name', width: 140 },
+    { field: 'inTime', headerName: 'In Time', width: 140, valueGetter: (value) => value || 'N/A' },
+    { field: 'outTime', headerName: 'Out Time', width: 140, valueGetter: (value) => value || 'N/A' },
+    { field: 'workHour', headerName: 'Work Hours', width: 120, valueGetter: (value) => `${value || 0} Hrs` },
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 100,
+      renderCell: (params) => (
+        <Chip
+          label={params.value}
+          color={getStatusChipColor(params.value)}
+          size="small"
+        />
+      ),
+    },
+  ];
+
   return (
-    <Box sx={{ width: '100%' }}>
-      <CardHeader
-        title={
+    <Box sx={{ width: '100%', p: 2 }}>
+      {/* Summary Cards */}
+      <Grid container spacing={2} sx={{ mb: 3, justifyContent: 'start' }}>
+        <Grid item sx={{ width: 250 }}>
+          <Card sx={{ background: 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)', color: 'white' }}>
+            <CardContent>
+              <Typography variant="h7" gutterBottom>
+                Present
+              </Typography>
+              <Typography variant="h4" component="div">
+                <CheckCircleIcon sx={{ mr: 1, fontSize: 40 }} />
+                {presentCount}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item sx={{ width: 250 }}>
+          <Card sx={{ background: 'linear-gradient(135deg, #F44336 0%, #EF5350 100%)', color: 'white' }}>
+            <CardContent>
+              <Typography variant="h7" gutterBottom>
+                Absent
+              </Typography>
+              <Typography variant="h4" component="div">
+                <CancelIcon sx={{ mr: 1, fontSize: 40 }} />
+                {absentCount}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item sx={{ width: 250 }}>
+          <Card sx={{ background: 'linear-gradient(135deg, #FF9800 0%, #FFB74D 100%)', color: 'white' }}>
+            <CardContent>
+              <Typography variant="h7" gutterBottom>
+                Total Hours
+              </Typography>
+              <Typography variant="h4" component="div">
+                <AccessTimeIcon sx={{ mr: 1, fontSize: 40 }} />
+                {totalHours} hrs
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Filters */}
+      <Card sx={{ mb: 2 }}>
+        <CardHeader
+          title="Filters"
+          action={
+            <Button variant="contained" startIcon={<DownloadIcon />} onClick={handleDownload}>
+              Download CSV
+            </Button>
+          }
+        />
+        <CardContent>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            {/* Person Filter */}
             <FormControl size="small" sx={{ minWidth: 160 }}>
               <InputLabel>Person</InputLabel>
               <Select
@@ -128,7 +200,6 @@ function AttendanceTab() {
               </Select>
             </FormControl>
 
-            {/* Single Date Picker */}
             <DatePicker
               label="Single Date"
               value={selectedDate}
@@ -136,7 +207,6 @@ function AttendanceTab() {
               slotProps={{ textField: { size: 'small' } }}
             />
 
-            {/* Start Date Picker */}
             <DatePicker
               label="Start Date"
               value={startDate}
@@ -144,71 +214,34 @@ function AttendanceTab() {
               slotProps={{ textField: { size: 'small' } }}
             />
 
-            {/* End Date Picker */}
             <DatePicker
               label="End Date"
               value={endDate}
               onChange={(newValue) => setEndDate(newValue)}
               slotProps={{ textField: { size: 'small' } }}
             />
-
-            {/* Download */}
-            <Button variant="contained" startIcon={<DownloadIcon />} onClick={handleDownload}>
-              Download
-            </Button>
           </Stack>
-        }
-      />
-      <CardContent sx={{ pt: 1, maxHeight: '70vh', overflow: 'auto' }}>
-        {filteredData.length > 0 ? (
-          <TableContainer component={Paper}>
-            <Table stickyHeader size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Date</TableCell>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>In</TableCell>
-                  <TableCell>Out</TableCell>
-                  <TableCell>Work Hours</TableCell>
-                  <TableCell>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredData.map((rec) => (
-                  <TableRow key={`${rec.id}-${rec.date}`}>
-                    <TableCell>{rec.date}</TableCell>
-                    <TableCell>{rec.id}</TableCell>
-                    <TableCell>{rec.name}</TableCell>
-                    <TableCell>{rec.inTime || "N/A"}</TableCell>
-                    <TableCell>{rec.outTime || "N/A"}</TableCell>
-                    <TableCell>{rec.workHour || 0} Hrs</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={rec.status}
-                        color={getStatusChipColor(rec.status)}
-                        size="small"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        ) : (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography>No data found.</Typography>
-          </Box>
-        )}
-      </CardContent>
-      <CardActions sx={{ justifyContent: 'space-between' }}>
-        <Typography variant="caption" color="text.secondary">
-          Showing {filteredData.length} record(s).
-        </Typography>
-        <Typography variant="body2">
-          Total: {totalHours} hrs | Present: {presentCount} | Absent: {absentCount}
-        </Typography>
-      </CardActions>
+        </CardContent>
+      </Card>
+
+      {/* Data Grid */}
+      <Card sx={{ width: '100%' }}>
+        <CardContent sx={{ height: '50vh', p: 0 }}>
+          <DataGrid
+            rows={filteredData.map((row, index) => ({ ...row, id: row.id || index }))}
+            columns={columns}
+            pageSize={10}
+            rowsPerPageOptions={[10, 25, 50]}
+            disableSelectionOnClick
+            sx={{ border: 0, height: '100%' }}
+          />
+        </CardContent>
+        <CardActions sx={{ justifyContent: 'flex-end', px: 2 }}>
+          <Typography variant="caption" color="text.secondary">
+            Showing {filteredData.length} record(s).
+          </Typography>
+        </CardActions>
+      </Card>
     </Box>
   );
 }
